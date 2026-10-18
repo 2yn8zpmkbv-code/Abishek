@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CFP Exam Drill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one working column — filter strip, question card, results ledger. Domain letters A–H carry the exam blueprint. */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#17221f; --muted:#5b6a66; --line:#d6dedb;
+  --accent:#1f5f52; --accent-soft:#e1eeea; --good:#1d7a45; --good-soft:#e2f3e8; --bad:#b03a2e; --bad-soft:#f8e6e3;
+  --display:"Source Serif 4", Georgia, serif; --body:"Public Sans", system-ui, sans-serif; --mono:"JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111816; --surface:#18221f; --ink:#e4ece9; --muted:#97a8a3; --line:#2c3a36;
+  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --surface:#18221f; --ink:#e4ece9; --muted:#97a8a3; --line:#2c3a36;
+  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+h1{font:600 clamp(1.7rem,4vw,2.2rem)/1.1 var(--display);margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:4px 0 0;font-size:.92rem}
+.countdown{font:500 .8rem var(--mono);color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:6px;white-space:nowrap}
+.panel{display:grid;gap:12px}
+.label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 .82rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:6px 10px;border-radius:999px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.chip b{font:500 .78rem var(--mono);color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select,button{font:500 .9rem var(--body)}
+select{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.btn{border:0;background:var(--accent);color:var(--bg);padding:9px 16px;border-radius:6px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,4vw,28px);display:grid;gap:16px}
+.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:500 .8rem var(--mono);color:var(--muted)}
+.dtag{color:var(--accent)}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.q{font:500 1.18rem/1.45 var(--display);margin:0}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;font:400 .97rem/1.45 var(--body)}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{font:500 .8rem/1.8 var(--mono);color:var(--muted);min-width:1.2em}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.dim{opacity:.6}
+.explain{border-left:3px solid var(--accent);padding:4px 0 4px 14px;font-size:.94rem}
+.explain strong{display:block;margin-bottom:2px}
+.explain.ok strong{color:var(--good)} .explain.no strong{color:var(--bad)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.score{font:500 .85rem var(--mono);color:var(--muted)}
+.big{font:600 3rem/1 var(--display);margin:0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n{font:500 .85rem var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mini{width:90px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--accent)}
+.missed{display:grid;gap:12px}
+.missed div{border-top:1px solid var(--line);padding-top:12px;font-size:.92rem}
+.missed p{margin:4px 0}
+.note{color:var(--muted);font-size:.82rem;margin:0}
+.kbd{font:500 .75rem var(--mono);color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>CFP Exam Drill</h1>
+      <p class="sub">Practice questions across the eight Principal Knowledge Domains, weighted like the real exam.</p>
+    </div>
+    <span class="countdown" id="countdown"></span>
+  </header>
+
+  <section class="panel" aria-label="Set options">
+    <span class="label">Domains <span style="text-transform:none;letter-spacing:0">(exam weight)</span></span>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <label class="label" for="count">Questions</label>
+      <select id="count"><option value="10">10</option><option value="25">25</option><option value="999">All selected</option></select>
+      <button class="btn" id="newSet">New set</button>
+      <span class="kbd">Keys: 1–4 to answer, Enter for next</span>
+    </div>
+  </section>
+
+  <main id="stage"></main>
+  <p class="note">Tax-table figures (brackets, limits) are left out on purpose. The October 2026 exam tests 2026 law, so check those numbers against the tables CFP Board provides at CFP.net/exam-tax-tables.</p>
+</div>
+
+<script>
+const DOMAINS={A:["Professional Conduct",8],B:["General Principles",15],C:["Risk & Insurance",11],D:["Investments",17],E:["Tax",14],F:["Retirement",18],G:["Estate",10],H:["Psychology",7]};
+// o[0] is always the correct answer; options are shuffled at display time.
+const BANK=[
+// A
+{d:"A",q:"Under CFP Board's Code and Standards, when must a CFP® professional act as a fiduciary?",o:["Whenever providing financial advice to a client","Only when delivering a written financial plan","Only when charging an hourly or flat fee","Only when managing discretionary assets"],e:"The fiduciary duty applies at all times when providing financial advice, not just during financial planning engagements."},
+{d:"A",q:"Which is NOT one of the three components of the fiduciary duty in CFP Board's Standards?",o:["Duty of Confidentiality","Duty of Loyalty","Duty of Care","Duty to Follow Client Instructions"],e:"The fiduciary duty is Loyalty, Care, and Follow Client Instructions. Confidentiality is a separate standard of conduct."},
+{d:"A",q:"Which document does an RIA deliver to describe its services, fees, and conflicts of interest?",o:["Form ADV Part 2A","Form U4","Form BD","Form 13F"],e:"Form ADV Part 2A is the firm brochure. Form U4 registers individual reps; Form BD registers broker-dealers; 13F reports institutional holdings."},
+{d:"A",q:"An investment adviser with $40 million in AUM and no exemption generally registers with:",o:["Its state securities regulator","The SEC only","FINRA","Both the SEC and FINRA"],e:"Mid-sized advisers ($25M–$100M) generally register with the state. SEC registration is generally required at $100M+ (with a buffer to $110M)."},
+{d:"A",q:"Regulation Best Interest (Reg BI) primarily governs recommendations made by:",o:["Broker-dealers to retail customers","RIAs to institutional clients","Insurance agents selling term life","Trustees of irrevocable trusts"],e:"Reg BI is the SEC standard for broker-dealers making recommendations to retail customers. RIAs already owe a fiduciary duty under the Advisers Act."},
+// B
+{d:"B",q:"In CFP Board's 7-step financial planning process, which step immediately follows 'Identifying and Selecting Goals'?",o:["Analyzing the current course and alternatives","Developing the financial planning recommendations","Understanding the client's circumstances","Presenting the recommendations"],e:"Order: Understand circumstances → Identify goals → Analyze current course and alternatives → Develop → Present → Implement → Monitor and update."},
+{d:"B",q:"A client needs $50,000 in 10 years. At 6% annual compounding, how much must be invested today?",o:["$27,920","$31,250","$29,600","$25,840"],e:"PV = 50,000 ÷ 1.06¹⁰ = 50,000 ÷ 1.7908 ≈ $27,920. Calculator: N=10, I/Y=6, FV=50,000, CPT PV."},
+{d:"B",q:"What is the effective annual rate of a 12% nominal rate compounded monthly?",o:["12.68%","12.00%","12.36%","12.55%"],e:"EAR = (1 + 0.12/12)¹² − 1 = 1.01¹² − 1 ≈ 12.68%. 12.36% is semiannual compounding."},
+{d:"B",q:"What is the monthly payment on a $300,000, 30-year fixed mortgage at 6%?",o:["$1,799","$1,500","$2,532","$1,650"],e:"N=360, I/Y=0.5, PV=300,000, CPT PMT ≈ $1,798.65. $2,532 is the 15-year payment."},
+{d:"B",q:"The emergency fund ratio is calculated as:",o:["Liquid assets ÷ monthly nondiscretionary expenses","Total assets ÷ total monthly income","Net worth ÷ annual nondiscretionary expenses","Cash ÷ monthly gross income"],e:"Liquid (cash and cash equivalents) ÷ monthly nondiscretionary expenses gives months of coverage; 3–6 months is the usual benchmark."},
+{d:"B",q:"The conventional lender guideline for the back-end debt-to-income ratio is no more than about:",o:["36% of gross income","28% of gross income","43% of net income","50% of net income"],e:"28% front-end (housing PITI) and 36% back-end (housing plus all other recurring debt), both on gross income."},
+{d:"B",q:"Which is a requirement for rolling a 529 plan into the beneficiary's Roth IRA under SECURE 2.0?",o:["The 529 account must be open at least 15 years","The beneficiary must be under age 26","The beneficiary must have no earned income","The rollover must occur within 60 days of graduation"],e:"The 529 must be open 15+ years, contributions from the last 5 years are ineligible, annual Roth limits apply, and there is a $35,000 lifetime cap. The beneficiary needs earned income."},
+{d:"B",q:"What is the annual contribution limit per beneficiary for a Coverdell ESA?",o:["$2,000","$5,000","$7,000","No federal limit"],e:"Coverdell ESAs are capped at $2,000 per beneficiary per year in total across all contributors, with contributor income phaseouts."},
+{d:"B",q:"For a married couple to elect gift splitting, which is required?",o:["Both spouses consent and a Form 709 is filed","The gift must come from joint property","The recipient must be a family member","The gift must be under the annual exclusion"],e:"Gift splitting treats a gift from one spouse as made half by each; both must consent and a gift tax return (Form 709) is required even if no tax is due."},
+// C
+{d:"C",q:"A home with $400,000 replacement cost is insured for $240,000 under a policy with an 80% coinsurance clause. Ignoring the deductible, what pays on a $100,000 loss?",o:["$75,000","$60,000","$100,000","$80,000"],e:"Required = 80% × 400,000 = 320,000. Payment = 240,000 ÷ 320,000 × 100,000 = $75,000."},
+{d:"C",q:"Which disability definition is most favorable to the insured?",o:["Own occupation","Any occupation","Modified own occupation","Social Security definition"],e:"Own-occupation pays if you can't perform your own job, even if you can work elsewhere. The Social Security definition is the strictest."},
+{d:"C",q:"Which transfer of a life insurance policy is an exception to the transfer-for-value rule?",o:["A transfer to the insured","A sale to an unrelated investor","A sale to the insured's sibling","A transfer to a creditor for value"],e:"Exceptions: transfers to the insured, a partner of the insured, a partnership with the insured as partner, a corporation where the insured is shareholder/officer, or carryover-basis transfers (gifts)."},
+{d:"C",q:"To make deductible contributions to an HSA, a person must generally:",o:["Be covered by a qualifying high-deductible plan","Be enrolled in Medicare Part A","Have an employer-sponsored FSA","Be under age 55"],e:"HSA eligibility requires HDHP coverage and no disqualifying other coverage. Medicare enrollment ends new contributions; 55+ adds a catch-up."},
+{d:"C",q:"A tax-qualified long-term care policy pays benefits when the insured cannot perform at least:",o:["2 of 6 ADLs, or has severe cognitive impairment","3 of 6 IADLs for 30 days","1 ADL with a physician's note","4 of 6 ADLs for one year"],e:"The HIPAA benefit trigger is inability to perform 2 of 6 activities of daily living (expected 90+ days) or severe cognitive impairment."},
+{d:"C",q:"How are partial withdrawals from a nonqualified deferred annuity (issued after 1982) taxed?",o:["Earnings come out first, as ordinary income","Basis comes out first, tax-free","Pro rata between basis and earnings","As long-term capital gain"],e:"Post-August 1982 contracts use LIFO (interest-first) for withdrawals. Annuitized payments use the exclusion ratio instead. A 10% penalty may also apply before 59½."},
+{d:"C",q:"An umbrella liability policy typically requires the insured to:",o:["Carry minimum underlying auto and home liability","Drop the auto liability coverage","Own commercial property","Insure only one residence"],e:"Umbrellas sit above underlying policies, so insurers require minimum underlying liability limits (for example, $250k/$500k auto)."},
+// D
+{d:"D",q:"A portfolio returned 10% with a standard deviation of 14%. The risk-free rate is 3%. What is its Sharpe ratio?",o:["0.50","0.71","0.21","0.64"],e:"Sharpe = (10 − 3) ÷ 14 = 0.50. It uses total risk (σ); Treynor uses beta."},
+{d:"D",q:"Using CAPM, what is the required return for a stock with beta 1.3 when the risk-free rate is 4% and the market return is 10%?",o:["11.8%","13.0%","9.2%","17.0%"],e:"r = 4% + 1.3 × (10% − 4%) = 4% + 7.8% = 11.8%."},
+{d:"D",q:"A stock just paid a $2.00 dividend, expected to grow 5% forever. The required return is 10%. What is its intrinsic value?",o:["$42.00","$40.00","$20.00","$13.33"],e:"D₁ = 2.00 × 1.05 = 2.10. V = 2.10 ÷ (0.10 − 0.05) = $42. Using D₀ gives the $40 trap."},
+{d:"D",q:"A client in the 32% bracket is considering a 3.5% municipal bond. What is its taxable-equivalent yield?",o:["5.15%","4.62%","4.83%","5.47%"],e:"TEY = r ÷ (1 − t) = 3.5% ÷ 0.68 ≈ 5.15%."},
+{d:"D",q:"Portfolio: 60% in Asset X (σ 20%) and 40% in Asset Y (σ 10%), correlation 0. What is portfolio standard deviation?",o:["12.65%","16.00%","14.00%","10.20%"],e:"σp = √(0.36·0.04 + 0.16·0.01 + 0) = √0.016 ≈ 12.65%. The weighted average (16%) applies only at correlation +1."},
+{d:"D",q:"A bond has modified duration of 7. If yields rise 1 percentage point, the price changes by about:",o:["−7%","+7%","−1%","−14%"],e:"%ΔP ≈ −modified duration × Δy = −7 × 1% = −7%. With Macaulay duration you divide Δy by (1 + y) first."},
+{d:"D",q:"Which bond has the highest duration, all else equal?",o:["20-year zero-coupon bond","20-year 8% coupon bond","10-year zero-coupon bond","10-year 8% coupon bond"],e:"Duration rises with longer maturity and lower coupon. A zero's duration equals its maturity."},
+{d:"D",q:"An investment returned +20% in year 1 and −10% in year 2. What is its geometric mean return?",o:["3.92%","5.00%","4.50%","2.00%"],e:"√(1.20 × 0.90) − 1 = √1.08 − 1 ≈ 3.92%. 5% is the arithmetic mean."},
+{d:"D",q:"Diversification across many securities can largely eliminate which risk?",o:["Unsystematic risk","Interest rate risk","Market risk","Purchasing power risk"],e:"Unsystematic (company-specific) risk diversifies away. Market, interest rate, and purchasing power risks are systematic."},
+{d:"D",q:"Which measure tells you whether a manager added value relative to the return CAPM predicts for the portfolio's beta?",o:["Jensen's alpha","Sharpe ratio","R-squared","Standard deviation"],e:"αp = rp − [rf + (rm − rf)βp]. Positive alpha means return above the CAPM-predicted level."},
+{d:"D",q:"Before relying on beta or Treynor to evaluate a fund, which statistic should you check?",o:["R-squared","Coefficient of variation","Sortino ratio","Standard deviation"],e:"A low R-squared (commonly below ~70%) means the benchmark explains little of the fund's movement, so beta-based measures are unreliable."},
+// E
+{d:"E",q:"A donor gives stock with a $50,000 basis and $30,000 FMV. The donee later sells it for $40,000. What is the donee's result?",o:["No gain or loss","$10,000 gain","$10,000 loss","$20,000 loss"],e:"Dual basis rule: gain basis is $50k, loss basis is $30k. A sale between the two produces no gain or loss."},
+{d:"E",q:"What is a beneficiary's basis in stock inherited at death (no alternate valuation election)?",o:["FMV on the date of death","The decedent's original cost","FMV on the date of distribution","The lower of cost or FMV"],e:"Inherited property generally receives a step-up (or step-down) to FMV at death, and the holding period is automatically long-term."},
+{d:"E",q:"After the 2017 tax law changes, Section 1031 like-kind exchanges are available for:",o:["Real property held for business or investment","Any business property, including equipment","Stocks and bonds of similar companies","A personal residence"],e:"Since 2018, §1031 applies only to real property held for business or investment, not personal property or securities."},
+{d:"E",q:"To exclude gain on the sale of a home under Section 121, the taxpayer generally must have:",o:["Owned and used it as a residence 2 of the last 5 years","Lived in it for 5 consecutive years","Owned it longer than one year","Reinvested proceeds in a new home"],e:"Ownership and use tests are 2 of 5 years. Exclusion is $250,000 single or $500,000 married filing jointly."},
+{d:"E",q:"Donating appreciated long-term capital gain stock to a public charity generally allows a deduction at FMV limited to:",o:["30% of AGI","60% of AGI","50% of AGI","20% of AGI"],e:"LTCG property to a public charity: FMV, 30% of AGI (or elect basis at 50%). Excess carries forward 5 years."},
+{d:"E",q:"A wash sale occurs when substantially identical securities are bought within how many days of a loss sale?",o:["30 days before or after","30 days after only","60 days before or after","31 days after only"],e:"The 61-day window covers 30 days before and after the sale. The disallowed loss is added to the basis of the replacement shares."},
+{d:"E",q:"Which is a requirement for an S corporation?",o:["No more than 100 shareholders","At least two classes of stock","Corporate shareholders are permitted","Nonresident alien owners are allowed"],e:"S corps: up to 100 shareholders, one class of stock, and generally only U.S. individuals, estates, and certain trusts as owners."},
+{d:"E",q:"Who pays income tax on the income of an intentionally defective grantor trust?",o:["The grantor","The trust","The beneficiaries","No one until distribution"],e:"For income tax, a grantor trust's income is taxed to the grantor, while the assets can still be outside the grantor's estate. Paying the tax is effectively a tax-free gift."},
+// F
+{d:"F",q:"For a client born in 1962, at what age must required minimum distributions from a traditional IRA begin?",o:["75","73","72","70½"],e:"Under SECURE 2.0, the RMD age is 73 for those born 1951–1959 and 75 for those born 1960 or later."},
+{d:"F",q:"A qualified Roth IRA distribution requires the five-year period to be met and the owner to be:",o:["59½, disabled, deceased, or a first-time buyer","At least 55 and separated from service","Taking substantially equal payments","Retired and over age 62"],e:"Qualified distributions are tax- and penalty-free: 5-year rule plus 59½, death, disability, or first-time homebuyer ($10k lifetime)."},
+{d:"F",q:"The 'Rule of 55' exception to the 10% early-withdrawal penalty applies to:",o:["Employer qualified plans after separation","Traditional IRAs at any age","Roth IRA earnings","SEP IRA contributions"],e:"The penalty exception applies to distributions from the employer plan after separating from service in or after the year you turn 55. It does not apply to IRAs."},
+{d:"F",q:"What penalty applies to a SIMPLE IRA distribution taken within the first two years of participation, before age 59½?",o:["25%","10%","20%","50%"],e:"The early-withdrawal penalty rises from 10% to 25% during the first two years of SIMPLE participation."},
+{d:"F",q:"For a worker whose full retirement age is 67, claiming Social Security at 62 pays what share of the PIA?",o:["70%","75%","80%","62%"],e:"60 months early: 5/9% × 36 months (20%) + 5/12% × 24 months (10%) = 30% reduction, so 70% of PIA."},
+{d:"F",q:"For the same worker (FRA 67), delaying benefits to age 70 pays what share of PIA?",o:["124%","132%","120%","108%"],e:"Delayed retirement credits are 8% per year: 3 years × 8% = 24%, so 124% of PIA."},
+{d:"F",q:"A cash balance plan is classified as:",o:["A defined benefit plan","A defined contribution plan","A profit-sharing plan","A nonqualified plan"],e:"Cash balance plans express benefits as account balances, but the employer guarantees the credits and bears the investment risk, so it's a DB plan."},
+{d:"F",q:"A qualified plan is top-heavy when key employees hold more than what share of plan benefits?",o:["60%","50%","80%","25%"],e:"Top-heavy is more than 60% of account balances or accrued benefits for key employees, which triggers minimum contributions and faster vesting."},
+{d:"F",q:"Under a 72(t) series of substantially equal periodic payments, payments must continue until the later of:",o:["5 years or age 59½","10 years or age 65","3 years or age 55","5 years or age 62"],e:"Modifying the payments early triggers the 10% penalty retroactively on all prior distributions, plus interest."},
+{d:"F",q:"After a lump-sum distribution of employer stock, how is the net unrealized appreciation (NUA) taxed when the stock is sold?",o:["As long-term capital gain","As ordinary income","Tax-free","At the 3.8% NIIT rate only"],e:"Basis is taxed as ordinary income at distribution; NUA is long-term capital gain at sale regardless of holding period. Post-distribution growth follows the normal holding period."},
+{d:"F",q:"Assets set aside in a rabbi trust for a nonqualified deferred compensation plan are:",o:["Subject to the employer's general creditors","Protected from the employer's creditors","Taxed to the employee when funded","Covered by ERISA funding rules"],e:"A rabbi trust protects against employer change of heart, not insolvency. Creditor exposure keeps deferral and avoids constructive receipt."},
+{d:"F",q:"Which beneficiary of an inherited IRA is subject to the 10-year rule rather than stretch distributions?",o:["An adult child 25 years younger","The surviving spouse","A chronically ill beneficiary","A sibling 4 years younger"],e:"Eligible designated beneficiaries (spouse, minor child of the owner, disabled, chronically ill, not more than 10 years younger) may stretch. Most others use the 10-year rule."},
+{d:"F",q:"Which part of Medicare primarily covers physician services and outpatient care?",o:["Part B","Part A","Part C","Part D"],e:"A covers hospital inpatient; B covers doctors and outpatient; C is Medicare Advantage; D covers prescription drugs."},
+// G
+{d:"G",q:"Which property passes outside of probate?",o:["Property held as joint tenants with right of survivorship","Property held as tenants in common","Assets titled solely in the decedent's name","A sole proprietorship's assets"],e:"JTWROS passes by operation of law to the surviving tenant. A tenant-in-common share passes through the decedent's estate."},
+{d:"G",q:"A client gives an existing life insurance policy to an ILIT and dies 2 years later. The death benefit is:",o:["Included in the gross estate","Excluded from the gross estate","Half included under portability","Taxed as income to the trust"],e:"Under the §2035 three-year rule, policies transferred within 3 years of death are pulled back into the estate. Having the ILIT buy a new policy avoids this."},
+{d:"G",q:"For property to qualify for the marital deduction as QTIP, the surviving spouse must:",o:["Receive all income at least annually","Hold a general power of appointment","Be able to name the remainder beneficiaries","Receive principal on demand"],e:"QTIP requires all income to the spouse at least annually and no one else benefiting during the spouse's life. The executor elects QTIP on Form 706."},
+{d:"G",q:"To make a qualified disclaimer, the beneficiary generally must act within how long of the transfer?",o:["9 months","6 months","12 months","15 months"],e:"Under §2518, the disclaimer must be written, irrevocable, made within 9 months, and before accepting any benefits."},
+{d:"G",q:"To pass a deceased spouse's unused exclusion (DSUE) to the survivor, the executor must:",o:["Timely file Form 706 and elect portability","File Form 709 for the survivor","Fund a credit shelter trust","Request a private letter ruling"],e:"Portability requires a timely filed estate tax return (Form 706) even if no tax is due. A simplified late election is available within 5 years for estates not otherwise required to file."},
+{d:"G",q:"What makes contributions to an irrevocable trust qualify for the gift tax annual exclusion?",o:["Crummey withdrawal powers","A spendthrift clause","A durable power of attorney","Naming the grantor as trustee"],e:"Crummey powers give beneficiaries a temporary right to withdraw, converting a future interest into a present interest."},
+{d:"G",q:"The alternate valuation date for estate assets is generally:",o:["6 months after death","9 months after death","1 year after death","The date of probate"],e:"The executor may elect it only if it reduces both the gross estate and the estate tax. Assets sold earlier are valued at sale date."},
+// H
+{d:"H",q:"A client holds onto losing stocks while quickly selling winners. This is best described as:",o:["The disposition effect","Herding","Anchoring","Recency bias"],e:"The disposition effect, explained by prospect theory and loss aversion, leads investors to realize gains too early and losses too late."},
+{d:"H",q:"According to prospect theory, people facing a sure loss tend to be:",o:["Risk-seeking","Risk-averse","Risk-neutral","Indifferent to framing"],e:"The value function is concave for gains (risk-averse) and convex for losses (risk-seeking), and steeper for losses than gains."},
+{d:"H",q:"A client says, 'I know I should save more, but I'm not ready to change yet.' In the Transtheoretical Model, the client is in:",o:["Contemplation","Precontemplation","Preparation","Maintenance"],e:"Contemplation is awareness of the problem with ambivalence about acting. Precontemplation is not yet recognizing the problem."},
+{d:"H",q:"After a client's spouse unexpectedly dies, what is generally the best initial planning guidance?",o:["Delay major irreversible decisions","Reallocate the portfolio at once","Sell the home within 90 days","Annuitize the life insurance proceeds"],e:"In crisis events, planners focus on immediate needs and advise postponing major, hard-to-reverse decisions until the client can process them."},
+{d:"H",q:"Which of Klontz's money scripts is associated with believing more money will solve all problems?",o:["Money worship","Money avoidance","Money vigilance","Money status"],e:"Money worship links money to happiness and is associated with overspending and hoarding. Vigilance is watchful saving; status ties self-worth to net worth."},
+{d:"H",q:"A planner says, 'It sounds like you feel caught between helping your parents and saving for your kids.' This is an example of:",o:["Reflective listening","Closed questioning","Confrontation","Advice giving"],e:"Reflection mirrors the client's feelings and content back, which builds rapport and checks understanding; it's a core motivational interviewing skill."}
+];
+
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let selected=new Set(store.get("cfpDomains",Object.keys(DOMAINS)));
+let set=[],i=0,results=[],locked=false;
+
+function shuffle(a){a=a.slice();for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}return a}
+
+function countdown(){
+  const now=new Date(),start=new Date(2026,9,29),end=new Date(2026,10,5,23,59);
+  const days=Math.ceil((start-now)/864e5);
+  $("#countdown").textContent= now<start?`${days} day${days===1?"":"s"} to the Oct 29 window`:now<=end?"Exam window open · closes Nov 5":"Next window: March 2027";
+}
+
+function renderChips(){
+  const c=$("#chips");c.innerHTML="";
+  for(const [k,[name,w]] of Object.entries(DOMAINS)){
+    const b=document.createElement("button");b.className="chip";b.id="chip-"+k;
+    b.setAttribute("aria-pressed",selected.has(k));
+    b.innerHTML=`<b>${k}</b>${name} · ${w}%`;
+    b.onclick=()=>{selected.has(k)?selected.delete(k):selected.add(k);if(!selected.size)selected.add(k);store.set("cfpDomains",[...selected]);renderChips()};
+    c.appendChild(b);
+  }
+}
+
+// Weighted draw: proportional to exam weight within selected domains.
+function buildSet(pool,n){
+  if(n>=pool.length)return shuffle(pool);
+  const by={};pool.forEach(q=>(by[q.d]=by[q.d]||[]).push(q));
+  for(const k in by)by[k]=shuffle(by[k]);
+  const keys=Object.keys(by),tw=keys.reduce((s,k)=>s+DOMAINS[k][1],0);
+  const out=[];let quota=keys.map(k=>({k,want:n*DOMAINS[k][1]/tw}));
+  quota.forEach(o=>{const t=Math.min(Math.floor(o.want),by[o.k].length);out.push(...by[o.k].splice(0,t))});
+  quota.sort((a,b)=>(b.want%1)-(a.want%1));
+  while(out.length<n){let added=false;for(const o of quota){if(out.length>=n)break;if(by[o.k].length){out.push(by[o.k].shift());added=true}}if(!added)break}
+  return shuffle(out);
+}
+
+function start(qs){
+  set=(qs||buildSet(BANK.filter(q=>selected.has(q.d)),+$("#count").value)).map(q=>{const o=shuffle(q.o.map((t,j)=>({t,c:j===0})));return{...q,opts:o}});
+  i=0;results=[];renderQ();
+}
+
+function renderQ(){
+  locked=false;const q=set[i],correct=results.filter(r=>r.ok).length;
+  $("#stage").innerHTML=`<article class="card" aria-live="polite">
+    <div class="meta"><span class="dtag">${q.d} · ${DOMAINS[q.d][0]}</span><span>Q ${i+1} / ${set.length}</span></div>
+    <div class="bar"><i style="width:${i/set.length*100}%"></i></div>
+    <p class="q">${q.q}</p>
+    <div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="opt${j}" data-j="${j}"><span class="k">${"abcd"[j]})</span><span>${o.t}</span></button>`).join("")}</div>
+    <div id="fb"></div>
+    <div class="foot"><span class="score">${correct} correct of ${results.length}</span><button class="btn" id="next" hidden>${i+1<set.length?"Next question":"See results"}</button></div>
+  </article>`;
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.j));
+  $("#next").onclick=next;
+}
+
+function answer(j){
+  if(locked)return;locked=true;
+  const q=set[i],ok=q.opts[j].c;
+  results.push({q,ok,pick:q.opts[j].t});
+  const stats=store.get("cfpStats",{});const s=stats[q.d]||[0,0];s[0]+=ok?1:0;s[1]++;stats[q.d]=s;store.set("cfpStats",stats);
+  document.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(q.opts[k].c)b.classList.add("right");else if(k===j)b.classList.add("wrong");else b.classList.add("dim")});
+  $("#fb").innerHTML=`<div class="explain ${ok?"ok":"no"}"><strong>${ok?"Correct.":"Not quite. Answer: "+q.o[0]}</strong>${q.e}</div>`;
+  $(".score").textContent=`${results.filter(r=>r.ok).length} correct of ${results.length}`;
+  const n=$("#next");n.hidden=false;n.focus();
+}
+
+function next(){i+1<set.length?(i++,renderQ()):renderResults()}
+
+function renderResults(){
+  const c=results.filter(r=>r.ok).length,pct=Math.round(c/results.length*100);
+  const by={};results.forEach(r=>{const b=by[r.q.d]=by[r.q.d]||[0,0];b[0]+=r.ok?1:0;b[1]++});
+  const life=store.get("cfpStats",{});
+  const rows=Object.keys(DOMAINS).filter(k=>by[k]||life[k]).map(k=>{const b=by[k],l=life[k];
+    const lp=l?Math.round(l[0]/l[1]*100):null;
+    return `<tr><td><b>${k}</b> ${DOMAINS[k][0]}</td><td class="n">${b?b[0]+"/"+b[1]:"–"}</td><td><div class="mini"><i style="width:${lp??0}%"></i></div></td><td class="n">${lp!==null?lp+"% ("+l[1]+")":"–"}</td></tr>`}).join("");
+  const missed=results.filter(r=>!r.ok);
+  $("#stage").innerHTML=`<article class="card">
+    <span class="label">Set complete</span>
+    <div class="row" style="gap:16px;align-items:baseline"><p class="big">${pct}%</p><span class="score">${c} of ${results.length} correct</span></div>
+    <div style="overflow-x:auto"><table><thead><tr><th>Domain</th><th style="text-align:right">This set</th><th>All-time</th><th style="text-align:right">Accuracy (answered)</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="row">${missed.length?`<button class="btn" id="retry">Retry ${missed.length} missed</button>`:""}<button class="btn ghost" id="again">New set</button><button class="btn ghost" id="reset">Clear all-time stats</button></div>
+    ${missed.length?`<span class="label">Review missed</span><div class="missed">${missed.map(r=>`<div><p><b>${r.q.d}.</b> ${r.q.q}</p><p>You chose: ${r.pick}</p><p><b>Answer: ${r.q.o[0]}</b></p><p class="note">${r.q.e}</p></div>`).join("")}</div>`:""}
+  </article>`;
+  if(missed.length)$("#retry").onclick=()=>start(missed.map(r=>r.q));
+  $("#again").onclick=()=>start();
+  $("#reset").onclick=e=>{if(e.target.dataset.arm){store.set("cfpStats",{});renderResults()}else{e.target.dataset.arm=1;e.target.textContent="Click again to clear"}};
+}
+
+document.addEventListener("keydown",e=>{
+  if(!set.length||e.target.tagName==="SELECT")return;
+  if(!locked&&/^[1-4]$/.test(e.key)&&document.getElementById("opt"+(e.key-1))){answer(+e.key-1)}
+  else if(e.key==="Enter"&&locked&&$("#next")&&!$("#next").hidden&&document.activeElement.id!=="next"){next()}
+});
+$("#newSet").onclick=()=>start();
+countdown();renderChips();start();
+</script>
+</body>
+
+</html>
