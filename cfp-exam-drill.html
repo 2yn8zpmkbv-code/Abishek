@@ -8,42 +8,60 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: one working column — filter strip, question card, results ledger. Domain letters A–H carry the exam blueprint. */
+/* Layout: one working column. Weakest Dalton topics (tap to drill) → mode → question card → results by topic. */
 :root{
   --bg:#f3f5f4; --surface:#ffffff; --ink:#17221f; --muted:#5b6a66; --line:#d6dedb;
-  --accent:#1f5f52; --accent-soft:#e1eeea; --good:#1d7a45; --good-soft:#e2f3e8; --bad:#b03a2e; --bad-soft:#f8e6e3;
+  --accent:#1f5f52; --accent-soft:#e1eeea; --good:#1d7a45; --good-soft:#e2f3e8; --bad:#b03a2e; --bad-soft:#f8e6e3; --warn:#a1640a; --warn-soft:#f8eedb;
   --display:"Source Serif 4", Georgia, serif; --body:"Public Sans", system-ui, sans-serif; --mono:"JetBrains Mono", ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111816; --surface:#18221f; --ink:#e4ece9; --muted:#97a8a3; --line:#2c3a36;
-  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; color-scheme:dark}}
+  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; --warn:#e9b25a; --warn-soft:#3a2d17; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111816; --surface:#18221f; --ink:#e4ece9; --muted:#97a8a3; --line:#2c3a36;
-  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; color-scheme:dark}
+  --accent:#6cc1ad; --accent-soft:#1d3530; --good:#5fcf8c; --good-soft:#173326; --bad:#ef8a7d; --bad-soft:#3a1f1b; --warn:#e9b25a; --warn-soft:#3a2d17; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
-.wrap{max-width:760px;margin:0 auto;display:grid;gap:20px}
+.wrap{max-width:820px;margin:0 auto;display:grid;gap:20px}
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
 h1{font:600 clamp(1.7rem,4vw,2.2rem)/1.1 var(--display);margin:0;text-wrap:balance}
+h2{font:600 1.15rem/1.2 var(--display);margin:0}
 .sub{color:var(--muted);margin:4px 0 0;font-size:.92rem}
-.countdown{font:500 .8rem var(--mono);color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:6px;white-space:nowrap}
+.countdown{font:500 .8rem var(--mono);color:var(--warn);background:var(--warn-soft);padding:6px 10px;border-radius:6px;white-space:nowrap}
 .panel{display:grid;gap:12px}
 .label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font:500 .82rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:6px 10px;border-radius:999px;cursor:pointer;display:flex;gap:6px;align-items:center}
-.chip b{font:500 .78rem var(--mono);color:var(--ink)}
-.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px clamp(14px,3vw,22px);display:grid;gap:14px}
+.plan-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.areas{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem}
+.areas span{display:flex;gap:6px;align-items:center}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.topic{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer;font:400 .86rem/1.3 var(--body)}
+.topic:hover{border-color:var(--accent)}
+.topic small{color:var(--muted);font:500 .72rem var(--mono)}
+.topic .area{font:500 .68rem var(--mono);color:var(--muted);letter-spacing:.04em}
+.pill{font:500 .72rem var(--mono);padding:2px 7px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.bad{color:var(--bad);background:var(--bad-soft)} .pill.warn{color:var(--warn);background:var(--warn-soft)} .pill.good{color:var(--good);background:var(--good-soft)}
+details.more summary{cursor:pointer;font-size:.85rem;color:var(--accent);font-weight:500}
+details.more .topics{margin-top:8px}
+.modes{display:flex;flex-wrap:wrap;gap:6px}
+.mode{font:500 .88rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px;border-radius:6px;cursor:pointer;display:grid;text-align:left;gap:1px}
+.mode small{color:var(--muted);font-size:.74rem;font-weight:400}
+.mode[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 select,button{font:500 .9rem var(--body)}
 select{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
 .btn{border:0;background:var(--accent);color:var(--bg);padding:9px 16px;border-radius:6px;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,4vw,28px);display:grid;gap:16px}
 .meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:500 .8rem var(--mono);color:var(--muted)}
 .dtag{color:var(--accent)}
 .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.case{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:.92rem}
+.case summary{cursor:pointer;font-weight:600}
+.case p{margin:8px 0 0}
+.case ul{margin:6px 0 0;padding-left:18px}
 .q{font:500 1.18rem/1.45 var(--display);margin:0}
 .opts{display:grid;gap:8px}
 .opt{text-align:left;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;font:400 .97rem/1.45 var(--body)}
@@ -55,16 +73,18 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outlin
 .opt.dim{opacity:.6}
 .explain{border-left:3px solid var(--accent);padding:4px 0 4px 14px;font-size:.94rem}
 .explain strong{display:block;margin-bottom:2px}
+.why{margin:10px 0 0;padding-left:18px;display:grid;gap:4px;color:var(--muted)}
+.why b{color:var(--ink)}
 .explain.ok strong{color:var(--good)} .explain.no strong{color:var(--bad)}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .score{font:500 .85rem var(--mono);color:var(--muted)}
 .big{font:600 3rem/1 var(--display);margin:0}
+.tbl{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:.9rem}
-td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
-th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
-td.n{font:500 .85rem var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.mini{width:90px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-.mini i{display:block;height:100%;background:var(--accent)}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;white-space:nowrap}
+td.n{font:500 .85rem var(--mono);font-variant-numeric:tabular-nums}
 .missed{display:grid;gap:12px}
 .missed div{border-top:1px solid var(--line);padding-top:12px;font-size:.92rem}
 .missed p{margin:4px 0}
@@ -79,155 +99,653 @@ td.n{font:500 .85rem var(--mono);text-align:right;font-variant-numeric:tabular-n
   <header>
     <div>
       <h1>CFP Exam Drill</h1>
-      <p class="sub">Practice questions across the eight Principal Knowledge Domains, weighted like the real exam.</p>
+      <p class="sub">Built from his Dalton Review chapter scores. Exam-level mode uses multi-step client scenarios where each wrong answer is a common mistake.</p>
     </div>
     <span class="countdown" id="countdown"></span>
   </header>
 
+  <section class="plan" aria-label="Weak topics">
+    <div class="plan-head"><h2>Weakest topics</h2><span class="note">Dalton chapter quizzes as of Oct 27 · tap a topic to drill it</span></div>
+    <div class="areas" id="areas"></div>
+    <div class="topics" id="weak"></div>
+    <details class="more"><summary>Topics at 60% and above</summary><div class="topics" id="strong"></div></details>
+    <p class="note">Weak-area focus mode picks topics in proportion to exam weight × gap to 80%, so Property Ownership (30%) and Postmortem Planning (30%) come up far more often than Process &amp; ethics (91%).</p>
+  </section>
+
   <section class="panel" aria-label="Set options">
-    <span class="label">Domains <span style="text-transform:none;letter-spacing:0">(exam weight)</span></span>
-    <div class="chips" id="chips"></div>
+    <span class="label">Mode</span>
+    <div class="modes" id="modes"></div>
     <div class="row">
       <label class="label" for="count">Questions</label>
-      <select id="count"><option value="10">10</option><option value="25">25</option><option value="999">All selected</option></select>
-      <button class="btn" id="newSet">New set</button>
+      <select id="count"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="999">All available</option></select>
+      <button class="btn" id="newSet">Start set</button>
       <span class="kbd">Keys: 1–4 to answer, Enter for next</span>
     </div>
   </section>
 
   <main id="stage"></main>
-  <p class="note">Tax-table figures (brackets, limits) are left out on purpose. The October 2026 exam tests 2026 law, so check those numbers against the tables CFP Board provides at CFP.net/exam-tax-tables.</p>
+  <p class="note">Tax-table figures (brackets, limits) are left out on purpose. The exam supplies them; check against CFP Board's tables at CFP.net/exam-tax-tables.</p>
 </div>
 
 <script>
-const DOMAINS={A:["Professional Conduct",8],B:["General Principles",15],C:["Risk & Insurance",11],D:["Investments",17],E:["Tax",14],F:["Retirement",18],G:["Estate",10],H:["Psychology",7]};
-// o[0] is always the correct answer; options are shuffled at display time.
-const BANK=[
-// A
-{d:"A",q:"Under CFP Board's Code and Standards, when must a CFP® professional act as a fiduciary?",o:["Whenever providing financial advice to a client","Only when delivering a written financial plan","Only when charging an hourly or flat fee","Only when managing discretionary assets"],e:"The fiduciary duty applies at all times when providing financial advice, not just during financial planning engagements."},
-{d:"A",q:"Which is NOT one of the three components of the fiduciary duty in CFP Board's Standards?",o:["Duty of Confidentiality","Duty of Loyalty","Duty of Care","Duty to Follow Client Instructions"],e:"The fiduciary duty is Loyalty, Care, and Follow Client Instructions. Confidentiality is a separate standard of conduct."},
-{d:"A",q:"Which document does an RIA deliver to describe its services, fees, and conflicts of interest?",o:["Form ADV Part 2A","Form U4","Form BD","Form 13F"],e:"Form ADV Part 2A is the firm brochure. Form U4 registers individual reps; Form BD registers broker-dealers; 13F reports institutional holdings."},
-{d:"A",q:"An investment adviser with $40 million in AUM and no exemption generally registers with:",o:["Its state securities regulator","The SEC only","FINRA","Both the SEC and FINRA"],e:"Mid-sized advisers ($25M–$100M) generally register with the state. SEC registration is generally required at $100M+ (with a buffer to $110M)."},
-{d:"A",q:"Regulation Best Interest (Reg BI) primarily governs recommendations made by:",o:["Broker-dealers to retail customers","RIAs to institutional clients","Insurance agents selling term life","Trustees of irrevocable trusts"],e:"Reg BI is the SEC standard for broker-dealers making recommendations to retail customers. RIAs already owe a fiduciary duty under the Advisers Act."},
-// B
-{d:"B",q:"In CFP Board's 7-step financial planning process, which step immediately follows 'Identifying and Selecting Goals'?",o:["Analyzing the current course and alternatives","Developing the financial planning recommendations","Understanding the client's circumstances","Presenting the recommendations"],e:"Order: Understand circumstances → Identify goals → Analyze current course and alternatives → Develop → Present → Implement → Monitor and update."},
-{d:"B",q:"A client needs $50,000 in 10 years. At 6% annual compounding, how much must be invested today?",o:["$27,920","$31,250","$29,600","$25,840"],e:"PV = 50,000 ÷ 1.06¹⁰ = 50,000 ÷ 1.7908 ≈ $27,920. Calculator: N=10, I/Y=6, FV=50,000, CPT PV."},
-{d:"B",q:"What is the effective annual rate of a 12% nominal rate compounded monthly?",o:["12.68%","12.00%","12.36%","12.55%"],e:"EAR = (1 + 0.12/12)¹² − 1 = 1.01¹² − 1 ≈ 12.68%. 12.36% is semiannual compounding."},
-{d:"B",q:"What is the monthly payment on a $300,000, 30-year fixed mortgage at 6%?",o:["$1,799","$1,500","$2,532","$1,650"],e:"N=360, I/Y=0.5, PV=300,000, CPT PMT ≈ $1,798.65. $2,532 is the 15-year payment."},
-{d:"B",q:"The emergency fund ratio is calculated as:",o:["Liquid assets ÷ monthly nondiscretionary expenses","Total assets ÷ total monthly income","Net worth ÷ annual nondiscretionary expenses","Cash ÷ monthly gross income"],e:"Liquid (cash and cash equivalents) ÷ monthly nondiscretionary expenses gives months of coverage; 3–6 months is the usual benchmark."},
-{d:"B",q:"The conventional lender guideline for the back-end debt-to-income ratio is no more than about:",o:["36% of gross income","28% of gross income","43% of net income","50% of net income"],e:"28% front-end (housing PITI) and 36% back-end (housing plus all other recurring debt), both on gross income."},
-{d:"B",q:"Which is a requirement for rolling a 529 plan into the beneficiary's Roth IRA under SECURE 2.0?",o:["The 529 account must be open at least 15 years","The beneficiary must be under age 26","The beneficiary must have no earned income","The rollover must occur within 60 days of graduation"],e:"The 529 must be open 15+ years, contributions from the last 5 years are ineligible, annual Roth limits apply, and there is a $35,000 lifetime cap. The beneficiary needs earned income."},
-{d:"B",q:"What is the annual contribution limit per beneficiary for a Coverdell ESA?",o:["$2,000","$5,000","$7,000","No federal limit"],e:"Coverdell ESAs are capped at $2,000 per beneficiary per year in total across all contributors, with contributor income phaseouts."},
-{d:"B",q:"For a married couple to elect gift splitting, which is required?",o:["Both spouses consent and a Form 709 is filed","The gift must come from joint property","The recipient must be a family member","The gift must be under the annual exclusion"],e:"Gift splitting treats a gift from one spouse as made half by each; both must consent and a gift tax return (Form 709) is required even if no tax is due."},
-// C
-{d:"C",q:"A home with $400,000 replacement cost is insured for $240,000 under a policy with an 80% coinsurance clause. Ignoring the deductible, what pays on a $100,000 loss?",o:["$75,000","$60,000","$100,000","$80,000"],e:"Required = 80% × 400,000 = 320,000. Payment = 240,000 ÷ 320,000 × 100,000 = $75,000."},
-{d:"C",q:"Which disability definition is most favorable to the insured?",o:["Own occupation","Any occupation","Modified own occupation","Social Security definition"],e:"Own-occupation pays if you can't perform your own job, even if you can work elsewhere. The Social Security definition is the strictest."},
-{d:"C",q:"Which transfer of a life insurance policy is an exception to the transfer-for-value rule?",o:["A transfer to the insured","A sale to an unrelated investor","A sale to the insured's sibling","A transfer to a creditor for value"],e:"Exceptions: transfers to the insured, a partner of the insured, a partnership with the insured as partner, a corporation where the insured is shareholder/officer, or carryover-basis transfers (gifts)."},
-{d:"C",q:"To make deductible contributions to an HSA, a person must generally:",o:["Be covered by a qualifying high-deductible plan","Be enrolled in Medicare Part A","Have an employer-sponsored FSA","Be under age 55"],e:"HSA eligibility requires HDHP coverage and no disqualifying other coverage. Medicare enrollment ends new contributions; 55+ adds a catch-up."},
-{d:"C",q:"A tax-qualified long-term care policy pays benefits when the insured cannot perform at least:",o:["2 of 6 ADLs, or has severe cognitive impairment","3 of 6 IADLs for 30 days","1 ADL with a physician's note","4 of 6 ADLs for one year"],e:"The HIPAA benefit trigger is inability to perform 2 of 6 activities of daily living (expected 90+ days) or severe cognitive impairment."},
-{d:"C",q:"How are partial withdrawals from a nonqualified deferred annuity (issued after 1982) taxed?",o:["Earnings come out first, as ordinary income","Basis comes out first, tax-free","Pro rata between basis and earnings","As long-term capital gain"],e:"Post-August 1982 contracts use LIFO (interest-first) for withdrawals. Annuitized payments use the exclusion ratio instead. A 10% penalty may also apply before 59½."},
-{d:"C",q:"An umbrella liability policy typically requires the insured to:",o:["Carry minimum underlying auto and home liability","Drop the auto liability coverage","Own commercial property","Insure only one residence"],e:"Umbrellas sit above underlying policies, so insurers require minimum underlying liability limits (for example, $250k/$500k auto)."},
-// D
-{d:"D",q:"A portfolio returned 10% with a standard deviation of 14%. The risk-free rate is 3%. What is its Sharpe ratio?",o:["0.50","0.71","0.21","0.64"],e:"Sharpe = (10 − 3) ÷ 14 = 0.50. It uses total risk (σ); Treynor uses beta."},
-{d:"D",q:"Using CAPM, what is the required return for a stock with beta 1.3 when the risk-free rate is 4% and the market return is 10%?",o:["11.8%","13.0%","9.2%","17.0%"],e:"r = 4% + 1.3 × (10% − 4%) = 4% + 7.8% = 11.8%."},
-{d:"D",q:"A stock just paid a $2.00 dividend, expected to grow 5% forever. The required return is 10%. What is its intrinsic value?",o:["$42.00","$40.00","$20.00","$13.33"],e:"D₁ = 2.00 × 1.05 = 2.10. V = 2.10 ÷ (0.10 − 0.05) = $42. Using D₀ gives the $40 trap."},
-{d:"D",q:"A client in the 32% bracket is considering a 3.5% municipal bond. What is its taxable-equivalent yield?",o:["5.15%","4.62%","4.83%","5.47%"],e:"TEY = r ÷ (1 − t) = 3.5% ÷ 0.68 ≈ 5.15%."},
-{d:"D",q:"Portfolio: 60% in Asset X (σ 20%) and 40% in Asset Y (σ 10%), correlation 0. What is portfolio standard deviation?",o:["12.65%","16.00%","14.00%","10.20%"],e:"σp = √(0.36·0.04 + 0.16·0.01 + 0) = √0.016 ≈ 12.65%. The weighted average (16%) applies only at correlation +1."},
-{d:"D",q:"A bond has modified duration of 7. If yields rise 1 percentage point, the price changes by about:",o:["−7%","+7%","−1%","−14%"],e:"%ΔP ≈ −modified duration × Δy = −7 × 1% = −7%. With Macaulay duration you divide Δy by (1 + y) first."},
-{d:"D",q:"Which bond has the highest duration, all else equal?",o:["20-year zero-coupon bond","20-year 8% coupon bond","10-year zero-coupon bond","10-year 8% coupon bond"],e:"Duration rises with longer maturity and lower coupon. A zero's duration equals its maturity."},
-{d:"D",q:"An investment returned +20% in year 1 and −10% in year 2. What is its geometric mean return?",o:["3.92%","5.00%","4.50%","2.00%"],e:"√(1.20 × 0.90) − 1 = √1.08 − 1 ≈ 3.92%. 5% is the arithmetic mean."},
-{d:"D",q:"Diversification across many securities can largely eliminate which risk?",o:["Unsystematic risk","Interest rate risk","Market risk","Purchasing power risk"],e:"Unsystematic (company-specific) risk diversifies away. Market, interest rate, and purchasing power risks are systematic."},
-{d:"D",q:"Which measure tells you whether a manager added value relative to the return CAPM predicts for the portfolio's beta?",o:["Jensen's alpha","Sharpe ratio","R-squared","Standard deviation"],e:"αp = rp − [rf + (rm − rf)βp]. Positive alpha means return above the CAPM-predicted level."},
-{d:"D",q:"Before relying on beta or Treynor to evaluate a fund, which statistic should you check?",o:["R-squared","Coefficient of variation","Sortino ratio","Standard deviation"],e:"A low R-squared (commonly below ~70%) means the benchmark explains little of the fund's movement, so beta-based measures are unreliable."},
-// E
-{d:"E",q:"A donor gives stock with a $50,000 basis and $30,000 FMV. The donee later sells it for $40,000. What is the donee's result?",o:["No gain or loss","$10,000 gain","$10,000 loss","$20,000 loss"],e:"Dual basis rule: gain basis is $50k, loss basis is $30k. A sale between the two produces no gain or loss."},
-{d:"E",q:"What is a beneficiary's basis in stock inherited at death (no alternate valuation election)?",o:["FMV on the date of death","The decedent's original cost","FMV on the date of distribution","The lower of cost or FMV"],e:"Inherited property generally receives a step-up (or step-down) to FMV at death, and the holding period is automatically long-term."},
-{d:"E",q:"After the 2017 tax law changes, Section 1031 like-kind exchanges are available for:",o:["Real property held for business or investment","Any business property, including equipment","Stocks and bonds of similar companies","A personal residence"],e:"Since 2018, §1031 applies only to real property held for business or investment, not personal property or securities."},
-{d:"E",q:"To exclude gain on the sale of a home under Section 121, the taxpayer generally must have:",o:["Owned and used it as a residence 2 of the last 5 years","Lived in it for 5 consecutive years","Owned it longer than one year","Reinvested proceeds in a new home"],e:"Ownership and use tests are 2 of 5 years. Exclusion is $250,000 single or $500,000 married filing jointly."},
-{d:"E",q:"Donating appreciated long-term capital gain stock to a public charity generally allows a deduction at FMV limited to:",o:["30% of AGI","60% of AGI","50% of AGI","20% of AGI"],e:"LTCG property to a public charity: FMV, 30% of AGI (or elect basis at 50%). Excess carries forward 5 years."},
-{d:"E",q:"A wash sale occurs when substantially identical securities are bought within how many days of a loss sale?",o:["30 days before or after","30 days after only","60 days before or after","31 days after only"],e:"The 61-day window covers 30 days before and after the sale. The disallowed loss is added to the basis of the replacement shares."},
-{d:"E",q:"Which is a requirement for an S corporation?",o:["No more than 100 shareholders","At least two classes of stock","Corporate shareholders are permitted","Nonresident alien owners are allowed"],e:"S corps: up to 100 shareholders, one class of stock, and generally only U.S. individuals, estates, and certain trusts as owners."},
-{d:"E",q:"Who pays income tax on the income of an intentionally defective grantor trust?",o:["The grantor","The trust","The beneficiaries","No one until distribution"],e:"For income tax, a grantor trust's income is taxed to the grantor, while the assets can still be outside the grantor's estate. Paying the tax is effectively a tax-free gift."},
-// F
-{d:"F",q:"For a client born in 1962, at what age must required minimum distributions from a traditional IRA begin?",o:["75","73","72","70½"],e:"Under SECURE 2.0, the RMD age is 73 for those born 1951–1959 and 75 for those born 1960 or later."},
-{d:"F",q:"A qualified Roth IRA distribution requires the five-year period to be met and the owner to be:",o:["59½, disabled, deceased, or a first-time buyer","At least 55 and separated from service","Taking substantially equal payments","Retired and over age 62"],e:"Qualified distributions are tax- and penalty-free: 5-year rule plus 59½, death, disability, or first-time homebuyer ($10k lifetime)."},
-{d:"F",q:"The 'Rule of 55' exception to the 10% early-withdrawal penalty applies to:",o:["Employer qualified plans after separation","Traditional IRAs at any age","Roth IRA earnings","SEP IRA contributions"],e:"The penalty exception applies to distributions from the employer plan after separating from service in or after the year you turn 55. It does not apply to IRAs."},
-{d:"F",q:"What penalty applies to a SIMPLE IRA distribution taken within the first two years of participation, before age 59½?",o:["25%","10%","20%","50%"],e:"The early-withdrawal penalty rises from 10% to 25% during the first two years of SIMPLE participation."},
-{d:"F",q:"For a worker whose full retirement age is 67, claiming Social Security at 62 pays what share of the PIA?",o:["70%","75%","80%","62%"],e:"60 months early: 5/9% × 36 months (20%) + 5/12% × 24 months (10%) = 30% reduction, so 70% of PIA."},
-{d:"F",q:"For the same worker (FRA 67), delaying benefits to age 70 pays what share of PIA?",o:["124%","132%","120%","108%"],e:"Delayed retirement credits are 8% per year: 3 years × 8% = 24%, so 124% of PIA."},
-{d:"F",q:"A cash balance plan is classified as:",o:["A defined benefit plan","A defined contribution plan","A profit-sharing plan","A nonqualified plan"],e:"Cash balance plans express benefits as account balances, but the employer guarantees the credits and bears the investment risk, so it's a DB plan."},
-{d:"F",q:"A qualified plan is top-heavy when key employees hold more than what share of plan benefits?",o:["60%","50%","80%","25%"],e:"Top-heavy is more than 60% of account balances or accrued benefits for key employees, which triggers minimum contributions and faster vesting."},
-{d:"F",q:"Under a 72(t) series of substantially equal periodic payments, payments must continue until the later of:",o:["5 years or age 59½","10 years or age 65","3 years or age 55","5 years or age 62"],e:"Modifying the payments early triggers the 10% penalty retroactively on all prior distributions, plus interest."},
-{d:"F",q:"After a lump-sum distribution of employer stock, how is the net unrealized appreciation (NUA) taxed when the stock is sold?",o:["As long-term capital gain","As ordinary income","Tax-free","At the 3.8% NIIT rate only"],e:"Basis is taxed as ordinary income at distribution; NUA is long-term capital gain at sale regardless of holding period. Post-distribution growth follows the normal holding period."},
-{d:"F",q:"Assets set aside in a rabbi trust for a nonqualified deferred compensation plan are:",o:["Subject to the employer's general creditors","Protected from the employer's creditors","Taxed to the employee when funded","Covered by ERISA funding rules"],e:"A rabbi trust protects against employer change of heart, not insolvency. Creditor exposure keeps deferral and avoids constructive receipt."},
-{d:"F",q:"Which beneficiary of an inherited IRA is subject to the 10-year rule rather than stretch distributions?",o:["An adult child 25 years younger","The surviving spouse","A chronically ill beneficiary","A sibling 4 years younger"],e:"Eligible designated beneficiaries (spouse, minor child of the owner, disabled, chronically ill, not more than 10 years younger) may stretch. Most others use the 10-year rule."},
-{d:"F",q:"Which part of Medicare primarily covers physician services and outpatient care?",o:["Part B","Part A","Part C","Part D"],e:"A covers hospital inpatient; B covers doctors and outpatient; C is Medicare Advantage; D covers prescription drugs."},
-// G
-{d:"G",q:"Which property passes outside of probate?",o:["Property held as joint tenants with right of survivorship","Property held as tenants in common","Assets titled solely in the decedent's name","A sole proprietorship's assets"],e:"JTWROS passes by operation of law to the surviving tenant. A tenant-in-common share passes through the decedent's estate."},
-{d:"G",q:"A client gives an existing life insurance policy to an ILIT and dies 2 years later. The death benefit is:",o:["Included in the gross estate","Excluded from the gross estate","Half included under portability","Taxed as income to the trust"],e:"Under the §2035 three-year rule, policies transferred within 3 years of death are pulled back into the estate. Having the ILIT buy a new policy avoids this."},
-{d:"G",q:"For property to qualify for the marital deduction as QTIP, the surviving spouse must:",o:["Receive all income at least annually","Hold a general power of appointment","Be able to name the remainder beneficiaries","Receive principal on demand"],e:"QTIP requires all income to the spouse at least annually and no one else benefiting during the spouse's life. The executor elects QTIP on Form 706."},
-{d:"G",q:"To make a qualified disclaimer, the beneficiary generally must act within how long of the transfer?",o:["9 months","6 months","12 months","15 months"],e:"Under §2518, the disclaimer must be written, irrevocable, made within 9 months, and before accepting any benefits."},
-{d:"G",q:"To pass a deceased spouse's unused exclusion (DSUE) to the survivor, the executor must:",o:["Timely file Form 706 and elect portability","File Form 709 for the survivor","Fund a credit shelter trust","Request a private letter ruling"],e:"Portability requires a timely filed estate tax return (Form 706) even if no tax is due. A simplified late election is available within 5 years for estates not otherwise required to file."},
-{d:"G",q:"What makes contributions to an irrevocable trust qualify for the gift tax annual exclusion?",o:["Crummey withdrawal powers","A spendthrift clause","A durable power of attorney","Naming the grantor as trustee"],e:"Crummey powers give beneficiaries a temporary right to withdraw, converting a future interest into a present interest."},
-{d:"G",q:"The alternate valuation date for estate assets is generally:",o:["6 months after death","9 months after death","1 year after death","The date of probate"],e:"The executor may elect it only if it reduces both the gross estate and the estate tax. Assets sold earlier are valued at sale date."},
-// H
-{d:"H",q:"A client holds onto losing stocks while quickly selling winners. This is best described as:",o:["The disposition effect","Herding","Anchoring","Recency bias"],e:"The disposition effect, explained by prospect theory and loss aversion, leads investors to realize gains too early and losses too late."},
-{d:"H",q:"According to prospect theory, people facing a sure loss tend to be:",o:["Risk-seeking","Risk-averse","Risk-neutral","Indifferent to framing"],e:"The value function is concave for gains (risk-averse) and convex for losses (risk-seeking), and steeper for losses than gains."},
-{d:"H",q:"A client says, 'I know I should save more, but I'm not ready to change yet.' In the Transtheoretical Model, the client is in:",o:["Contemplation","Precontemplation","Preparation","Maintenance"],e:"Contemplation is awareness of the problem with ambivalence about acting. Precontemplation is not yet recognizing the problem."},
-{d:"H",q:"After a client's spouse unexpectedly dies, what is generally the best initial planning guidance?",o:["Delay major irreversible decisions","Reallocate the portfolio at once","Sell the home within 90 days","Annuitize the life insurance proceeds"],e:"In crisis events, planners focus on immediate needs and advise postponing major, hard-to-reverse decisions until the client can process them."},
-{d:"H",q:"Which of Klontz's money scripts is associated with believing more money will solve all problems?",o:["Money worship","Money avoidance","Money vigilance","Money status"],e:"Money worship links money to happiness and is associated with overspending and hoarding. Vigilance is watchful saving; status ties self-worth to net worth."},
-{d:"H",q:"A planner says, 'It sounds like you feel caught between helping your parents and saving for your kids.' This is an example of:",o:["Reflective listening","Closed questioning","Confrontation","Advice giving"],e:"Reflection mirrors the client's feelings and content back, which builds rapport and checks understanding; it's a core motivational interviewing skill."}
+// Areas match Dalton's subjects. w = CFP exam weight (Fundamentals = General Principles 15%; Conduct and Psychology are already strong).
+const AREAS={TX:["Tax",14,56],ES:["Estate",10,55],RT:["Retirement",18,65],IV:["Investments",17,65],IN:["Insurance",11,64],FP:["Fundamentals",15,91]};
+const TARGET=80;
+// Topic → [label, area, Dalton % for the matching chapter(s)]
+const TOPICS={
+tx_law:["Tax law sources, penalties & audits","TX",31], tx_ded:["Deductions (standard, itemized, AGI)","TX",43], tx_acct:["Accounting & installment methods","TX",42],
+tx_gains:["Gains, losses & basis","TX",44], tx_biz:["Depreciation, §179, 1231/1245/1250","TX",48], tx_kid:["Kiddie tax","TX",50],
+tx_ent:["Entities & trust taxation","TX",56], tx_amt:["AMT","TX",57], tx_cred:["Credits","TX",59], tx_inc:["Income & exclusions","TX",59],
+tx_file:["Filing status","TX",63], tx_prop:["Like-kind, home sale & rentals","TX",76],
+es_own:["Property ownership","ES",30], es_post:["Postmortem planning","ES",30], es_gst:["Generation-skipping tax","ES",40],
+es_intra:["Intrafamily transfers","ES",49], es_tax:["Estate tax","ES",51], es_gift:["Gifts & gift tax","ES",52], es_char:["Charitable transfers","ES",52],
+es_docs:["Estate planning documents","ES",59], es_prob:["Probate & estate basics","ES",80],
+rt_sep:["SEP & SIMPLE plans","RT",46], rt_dc:["Nonqualified deferred comp","RT",57], rt_ira:["IRAs","RT",59], rt_qp:["Qualified plan types & limits","RT",61],
+rt_fringe:["Employee fringe benefits","RT",63], rt_dist:["Plan distributions","RT",68], rt_stock:["ISOs, NQSOs & restricted stock","RT",69],
+rt_admin:["Plan administration & selection","RT",69], rt_fund:["Retirement funding calcs","RT",72], rt_ss:["Social Security & Medicare","RT",75], rt_403:["403(b) & 457 plans","RT",88],
+iv_fx:["Foreign currency returns","IV",0], iv_yield:["YTM & tax-equivalent yield","IV",25], iv_re:["Real estate & REITs","IV",29], iv_margin:["Margin & short sales","IV",33],
+iv_ret:["Return measures (HPR, GM, TWR, WAVG)","IV",38], iv_hybrid:["Preferred stock & convertibles","IV",38], iv_anal:["Fundamental/technical analysis & EMH","IV",46],
+iv_beh:["Behavioral finance","IV",50], iv_risk:["Types of investment risk","IV",55], iv_val:["Stock valuation (DDM)","IV",58], iv_sel:["Investment selection","IV",61],
+iv_funds:["Investment companies","IV",67], iv_bond:["Bond pricing, duration & types","IV",72], iv_opt:["Options & futures","IV",79], iv_rap:["Risk-adjusted returns & MPT","IV",82],
+in_pol:["Policy & company selection","IN",25], in_ltc:["Long-term care","IN",33], in_di:["Disability insurance","IN",44], in_pc:["Property, casualty & liability","IN",53],
+in_biz:["Business uses of insurance","IN",58], in_law:["Contract law & regulation","IN",58], in_life:["Life insurance & annuities","IN",61], in_health:["Health insurance","IN",62],
+in_risk:["Risk management principles","IN",71],
+fp_irr:["IRR & NPV","FP",43], fp_tvm:["Time value of money","FP",82], fp_gen:["Process, ethics & regulation","FP",91], fp_psy:["Client psychology","FP",100]
+};
+
+const CASES={
+morales:{t:"Diego and Ana Morales",body:`<p>Diego (52) and Ana (50) are married and file jointly; they don't live in a community property state. Diego owns an S corporation consulting firm with three employees, ages 28–35. They want to retire at 62, give $30,000 to their church this year, pay for their 16-year-old daughter's college, and keep estate taxes down.</p><ul><li>Diego's 401(k): $620,000 · Ana's traditional IRA: $85,000 (all pretax)</li><li>Joint brokerage: XYZ stock, basis $40,000, FMV $160,000, held 6 years · ABC stock, basis $50,000, FMV $30,000</li><li>Home: JTWROS, bought for $250,000, now worth $550,000</li><li>$1,000,000 term policy on Diego, owned by Diego, Ana is beneficiary</li></ul>`},
+park:{t:"Linda Park",body:`<p>Linda is 57, a widow, and is retiring this year from a public school district. She wants $70,000 a year of spending and is worried about a market drop early in retirement.</p><ul><li>403(b): $480,000 · governmental 457(b): $150,000</li><li>Roth IRA opened in 2010: $90,000 balance, of which $50,000 is contributions</li><li>Taxable account: $200,000</li><li>Her late husband had a larger Social Security record than hers</li></ul>`},
+reilly:{t:"Tom Reilly",body:`<p>Tom is 45, single, a software engineer, and lives in a condo he owns. His employer pays the full premium on his group long-term disability policy (60% of salary).</p><ul><li>2,000 ISOs, strike $15 · 1,000 NQSOs, strike $20 · current FMV $45</li><li>He plans to exercise both grants this year</li></ul>`}
+};
+
+// [topic, question, options (first is correct; shuffled at display), explanation, case?]
+const RAW=[
+// ================= TAX =================
+["tx_law","Which source of tax authority carries the most weight?",["Internal Revenue Code","Treasury regulations","Revenue rulings","Private letter rulings"],"Order: Code → Treasury regulations → revenue rulings/procedures → private letter rulings."],
+["tx_law","A private letter ruling is binding on the IRS only for:",["The taxpayer who requested it","All taxpayers with similar facts","Taxpayers in the same circuit","Anyone who cites it on a return"],"PLRs can't be cited as precedent by other taxpayers. Revenue rulings apply to everyone."],
+["tx_law","Which court lets a taxpayer litigate without first paying the disputed tax?",["U.S. Tax Court","U.S. District Court","Court of Federal Claims","Circuit Court of Appeals"],"District Court and Court of Federal Claims are refund courts: pay first, then sue. Only District Court offers a jury."],
+["tx_law","Which is the only court where a tax case can be heard by a jury?",["U.S. District Court","U.S. Tax Court","Court of Federal Claims","Small Tax Case Division"],"Tax Court judges are tax specialists with no jury. The small case division handles disputes of $50,000 or less, and its decisions can't be appealed."],
+["tx_law","The normal 3-year statute of limitations on assessment extends to 6 years when a taxpayer:",["Omits more than 25% of gross income","Files an amended return","Files a few days late","Claims a large refund"],"Fraud or failure to file means there is no statute of limitations."],
+["tx_law","The failure-to-file penalty is generally:",["5% of unpaid tax per month, up to 25%","0.5% per month, up to 25%","20% of the underpayment","75% of the underpayment"],"Failure to pay is 0.5%/month (max 25%). Filing on time even without paying avoids the larger penalty."],
+["tx_law","The accuracy-related penalty for negligence or substantial understatement is:",["20% of the underpayment","75% of the underpayment","5% per month","10% of the tax due"],"Civil fraud is 75%. Reasonable cause and good faith can avoid the 20% penalty."],
+
+["tx_ded","AGI is $100,000 and unreimbursed medical expenses are $12,000. How much is deductible if the taxpayer itemizes?",["$4,500","$12,000","$2,000","$9,500"],"Medical expenses are deductible above 7.5% of AGI: $12,000 − $7,500 = $4,500."],
+["tx_ded","Spouses file separately and one itemizes. The other spouse:",["Must also itemize","May take the standard deduction","Gets a double standard deduction","Must file jointly instead"],"MFS spouses must both itemize or both take the standard deduction."],
+["tx_ded","The investment interest expense deduction is limited to:",["Net investment income","$3,000 per year","10% of AGI","Mortgage interest paid"],"The excess carries forward indefinitely. Qualified dividends and LTCG count only if you elect to tax them at ordinary rates."],
+["tx_ded","Which is an above-the-line deduction (for AGI)?",["Half of self-employment tax","Home mortgage interest","Charitable contributions","State income taxes"],"Above-the-line items include half of SE tax, HSA contributions, deductible IRA contributions, and student loan interest."],
+["tx_ded","Interest on home acquisition debt taken out after Dec 15, 2017 is deductible on loans up to:",["$750,000","$1,000,000","$500,000","$100,000"],"Home equity interest is deductible only if the loan is used to buy, build, or improve the home."],
+["tx_ded","Appreciated long-term capital gain stock given to a public charity is deductible at FMV, limited to:",["30% of AGI","60% of AGI","50% of AGI","20% of AGI"],"Or elect basis at 50%. Excess carries forward 5 years."],
+["tx_ded","An additional standard deduction is available to taxpayers who are:",["Age 65 or older, or blind","Filing head of household","Claimed as dependents","Self-employed"],"Taxpayers who are both 65+ and blind get two additional amounts."],
+
+["tx_acct","A cash-basis taxpayer gets a check Dec 30 and deposits it Jan 3. The income is taxed:",["In the year the check was received","In the year it was deposited","Half in each year","When the check clears"],"Constructive receipt: income is taxed when it is available without substantial restriction."],
+["tx_acct","Land with a $60,000 basis sells for $100,000 on the installment method. The buyer pays $20,000 in year 1. What gain is reported in year 1?",["$8,000","$20,000","$12,000","$40,000"],"Gross profit ratio = $40,000 ÷ $100,000 = 40%. 40% × $20,000 = $8,000."],
+["tx_acct","The installment method is NOT available for:",["Sales of inventory by a dealer","Sales of investment land","Sale of a business building","Sales to unrelated buyers"],"Dealer sales and inventory can't use the installment method, and depreciation recapture is taxed in the year of sale."],
+["tx_acct","Under the accrual method, income is recognized when:",["All events fix the right to it and the amount is known","Cash is received","The invoice is paid","Goods are shipped back"],"That is the all-events test. Prepaid income can sometimes be deferred one year."],
+["tx_acct","An installment buyer who is a related party resells the property within 2 years. The original seller:",["Must recognize the remaining deferred gain","Keeps deferring the gain","Can deduct a loss","Owes nothing more"],"The related-party resale rule prevents families from cashing out while deferring gain."],
+
+["tx_gains","A donor gives stock with a $50,000 basis and $30,000 FMV. The donee sells it for $40,000. Result?",["No gain or loss","$10,000 gain","$10,000 loss","$20,000 loss"],"Dual basis: gain basis $50k, loss basis $30k. A sale between the two produces no gain or loss."],
+["tx_gains","What is a beneficiary's basis in inherited stock (no alternate valuation)?",["FMV on the date of death","The decedent's original cost","FMV when distributed","The lower of cost or FMV"],"Step-up (or step-down), with an automatic long-term holding period."],
+["tx_gains","A wash sale occurs if substantially identical securities are bought within how many days of a loss sale?",["30 days before or after","30 days after only","60 days before or after","31 days after only"],"The disallowed loss is added to the basis of the replacement shares."],
+["tx_gains","A taxpayer has a $10,000 net capital loss. How much offsets ordinary income this year?",["$3,000, with $7,000 carried forward","$10,000","$3,000, with the rest lost","$5,000, with $5,000 carried back"],"$1,500 if MFS. The carryforward is indefinite but is lost at death."],
+["tx_gains","A loss on qualifying §1244 small business stock is:",["Ordinary, up to $50,000 ($100,000 MFJ) a year","Capital and unlimited","Ordinary and unlimited","Capital, limited to $3,000"],"Any excess is a capital loss. §1244 applies only to the original owner."],
+["tx_gains","Mom sells stock (basis $30,000) to her son for $20,000. He later sells it for $35,000. What is his recognized gain?",["$5,000","$15,000","$0","$10,000"],"Mom's $10,000 loss is disallowed (§267). The son's $15,000 gain is reduced by that disallowed loss."],
+["tx_gains","Long-term gains on collectibles are taxed at a maximum rate of:",["28%","20%","25%","15%"],"Collectibles include art, coins, and physical-metal ETFs. Unrecaptured §1250 gain maxes at 25%."],
+["tx_gains","A security that becomes worthless is treated as sold:",["On the last day of the tax year","On the date it became worthless","On the purchase anniversary","On the date the company files"],"That can turn a short-term holding into a long-term loss."],
+["tx_gains","STCG $5,000, STCL $8,000, LTCG $10,000. What is the net result?",["$7,000 net long-term gain","$7,000 net short-term gain","$3,000 deductible loss and $10,000 LTCG","$13,000 long-term gain"],"Net short-term: −$3,000. Net long-term: +$10,000. Netting the two gives a $7,000 net LTCG."],
+["tx_gains","Gifted property's holding period, when the donee uses the donor's basis, is:",["Donor's period added to the donee's","Restarted at the gift date","Automatically long-term","Always short-term"],"If the loss basis (FMV) is used instead, the holding period starts at the gift date."],
+
+["tx_biz","Residential rental buildings are depreciated straight-line over:",["27.5 years","39 years","15 years","40 years"],"Nonresidential real property uses 39 years. Land is never depreciated."],
+["tx_biz","Net §1231 gains for the year are treated as:",["Long-term capital gains","Ordinary income","Short-term capital gains","Tax-exempt income"],"Net §1231 losses are ordinary. That's the best of both worlds, subject to recapture rules."],
+["tx_biz","A net §1231 gain is recharacterized as ordinary income to the extent of:",["Net §1231 losses deducted in the prior 5 years","All depreciation taken","25% of the gain","The original cost"],"This is the 5-year lookback rule."],
+["tx_biz","Gain on selling business equipment, to the extent of prior depreciation, is:",["Ordinary income (§1245)","Taxed at a maximum 25%","Long-term capital gain","Tax-free return of basis"],"Any gain above the original cost is §1231 gain."],
+["tx_biz","On sale of a depreciated rental building, unrecaptured §1250 gain is taxed at a maximum of:",["25%","20%","28%","Ordinary rates"],"Straight-line depreciation on real property is recaptured at a maximum 25% rate."],
+["tx_biz","The §179 expense deduction cannot exceed:",["Taxable income from active trades or businesses","Net investment income","25% of gross receipts","The owner's AGI"],"Any excess carries forward. §179 can't create a loss; bonus depreciation can."],
+["tx_biz","Which business asset cannot be depreciated?",["Land","Office building","Delivery truck","Computer"],"Land improvements like paving and fencing can be depreciated."],
+
+["tx_kid","The kiddie tax applies to unearned income of a full-time student under age:",["24","19","21","18"],"Under 19, or under 24 for full-time students whose earned income is no more than half their support."],
+["tx_kid","The kiddie tax taxes a child's:",["Unearned income above a threshold at the parent's rate","Wages at the parent's rate","All income at the trust rate","Dividends only, at 0%"],"Earned income is always taxed at the child's own rate."],
+
+["tx_ent","Which is a requirement for an S corporation?",["No more than 100 shareholders","At least two classes of stock","Corporate shareholders permitted","Nonresident alien owners allowed"],"One class of stock; generally only U.S. individuals, estates, and certain trusts can be owners."],
+["tx_ent","Who pays income tax on an intentionally defective grantor trust's income?",["The grantor","The trust","The beneficiaries","No one until distribution"],"The grantor's paying the tax is effectively a tax-free gift to the trust."],
+["tx_ent","In trust taxation, distributable net income (DNI) mainly:",["Caps the distribution deduction and beneficiaries' taxable amount","Sets the trust's tax rate","Determines estate inclusion","Measures the trustee's fee"],"DNI prevents double taxation of distributed income."],
+["tx_ent","An S corporation shareholder who works in the business must:",["Take reasonable compensation as wages","Take all profits as distributions","Pay SE tax on all profits","Avoid any salary"],"The IRS reclassifies distributions as wages when salary is unreasonably low."],
+["tx_ent","Losses of a C corporation:",["Stay at the corporate level","Pass through to shareholders","Pass through up to basis","Pass through to 50% owners"],"Only pass-through entities (S corps, partnerships, LLCs) pass losses to owners."],
+["tx_ent","A partner's guaranteed payments are:",["Ordinary income subject to SE tax","Long-term capital gains","Tax-free distributions","Qualified dividends"],"They're deductible by the partnership and taxed to the partner like salary."],
+["tx_ent","The federal income tax rate on a C corporation is:",["A flat 21%","Graduated up to 35%","A flat 15%","The owner's individual rate"],"Dividends are then taxed again to shareholders, which is the double tax."],
+["tx_ent","An S corp shareholder can deduct pass-through losses only up to:",["Stock plus debt basis (then at-risk and passive limits)","$3,000 a year","The corporation's retained earnings","50% of the loss"],"Suspended losses carry forward until basis is restored."],
+
+["tx_amt","Exercising ISOs and holding the shares past year-end creates:",["An AMT adjustment for the spread","Ordinary income on the W-2","A capital gain at exercise","No tax consequence at all"],"There's no regular tax at exercise, but the bargain element is an AMT adjustment."],
+["tx_amt","Which is an AMT preference or adjustment item?",["Interest on private activity bonds","Mortgage interest on the main home","Charitable contributions","Qualified dividends"],"Other AMT items: ISO spread, state and local taxes, the standard deduction, and accelerated depreciation."],
+["tx_amt","For AMT purposes, which deduction is NOT allowed?",["State and local taxes","Charitable contributions","Home acquisition interest","Investment interest"],"The standard deduction is also not allowed for AMT."],
+["tx_amt","Which AMT item can generate a minimum tax credit in future years?",["ISO exercise (a deferral item)","State and local taxes","Losing the standard deduction","Private activity bond interest"],"Deferral items reverse later, so AMT paid on them creates a credit. Exclusion items don't."],
+
+["tx_cred","For someone in the 24% bracket, a $1,000 credit compared with a $1,000 deduction:",["Saves $760 more","Saves the same amount","Saves $240 less","Saves $1,000 less"],"The credit saves $1,000; the deduction saves $240."],
+["tx_cred","Which education credit is partly refundable and limited to the first 4 years of college?",["American Opportunity Tax Credit","Lifetime Learning Credit","Saver's Credit","Child and dependent care credit"],"AOTC is 40% refundable. Lifetime Learning is nonrefundable, with no limit on years."],
+["tx_cred","Which credit is fully refundable?",["Earned income credit","Lifetime Learning Credit","Foreign tax credit","Child and dependent care credit"],"A refundable credit can produce a refund beyond the tax owed."],
+["tx_cred","Foreign taxes paid inside a mutual fund can be taken as:",["Either a credit or an itemized deduction","Only an itemized deduction","Only a credit","Neither"],"The credit is usually worth more."],
+
+["tx_inc","Under divorce agreements executed after 2018, alimony is:",["Not deductible by the payer or taxable to the recipient","Deductible and taxable","Taxable to the recipient only","Deductible by the payer only"],"Child support has never been deductible or taxable."],
+["tx_inc","Which is included in gross income?",["A scholarship used for room and board","Life insurance death proceeds","Child support received","A gift from a parent"],"Scholarships are excludable only for tuition, fees, books, and required supplies."],
+["tx_inc","What is the maximum share of Social Security benefits that can be included in income?",["85%","50%","100%","65%"],"0%, up to 50%, or up to 85%, depending on provisional income."],
+["tx_inc","Municipal bond interest is generally:",["Excluded but counted in provisional income for Social Security","Excluded from every calculation","Taxed at capital gain rates","Taxable unless held in an IRA"],"Tax-exempt interest can still make Social Security benefits taxable."],
+["tx_inc","Common stock dividends are qualified only if the stock is held more than:",["60 days in the 121-day window around ex-dividend","30 days before the ex-dividend date","1 year","90 days after the record date"],"REIT dividends are mostly non-qualified."],
+
+["tx_file","A widow with a dependent child can file as qualifying surviving spouse for:",["2 years after the year of death","1 year after the year of death","5 years","Until the child turns 19"],"In the year of death itself, a joint return is still allowed."],
+["tx_file","Head of household requires the taxpayer to be unmarried and to pay more than half the cost of:",["A home for a qualifying person","A child's tuition","Their own support","A parent's medical bills"],"A dependent parent doesn't need to live with the taxpayer."],
+
+["tx_prop","After the 2017 tax law, Section 1031 like-kind exchanges are available for:",["Real property held for business or investment","Any business property, including equipment","Stocks and bonds","A personal residence"],"Personal property and securities no longer qualify."],
+["tx_prop","To exclude gain on a home sale under §121, the taxpayer generally must have:",["Owned and used it as a residence 2 of the last 5 years","Lived there 5 consecutive years","Owned it longer than one year","Reinvested proceeds in a new home"],"$250,000 single / $500,000 MFJ."],
+["tx_prop","A building (FMV $500,000, basis $300,000) is exchanged for a $450,000 building plus $50,000 cash. Recognized gain?",["$50,000","$200,000","$150,000","$0"],"Recognized gain = lesser of realized gain ($200k) or boot ($50k). New basis: $450k − $150k deferred = $300k."],
+["tx_prop","The $25,000 active-participation rental loss allowance phases out between MAGI of:",["$100,000 and $150,000","$75,000 and $125,000","$150,000 and $200,000","$200,000 and $250,000"],"Not indexed for inflation."],
+["tx_prop","Gain on an involuntary conversion can be deferred if replacement property is bought within:",["2 years (3 for condemned business real property)","180 days","6 months","5 years"],"The deadline runs from the end of the tax year in which gain is realized."],
+
+// ================= ESTATE =================
+["es_own","Tenancy by the entirety can be held only by:",["Spouses","Siblings","Any two people","Business partners"],"Neither spouse can sever it alone, and it is protected from creditors of only one spouse."],
+["es_own","Which form lets co-owners hold unequal shares and leave their share by will?",["Tenancy in common","JTWROS","Tenancy by the entirety","Community property"],"A TIC share goes through probate. JTWROS and TBE pass to the survivor."],
+["es_own","One JTWROS owner sells her interest to an outsider. The outsider holds:",["A tenancy in common interest","A JTWROS interest","No interest at all","A community property interest"],"A sale severs the joint tenancy for that share."],
+["es_own","In a community property state, property inherited by one spouse during marriage is:",["Separate property","Community property","Split 50/50","Owned by the probate estate"],"Gifts, inheritances, and pre-marriage property are separate, unless commingled."],
+["es_own","A father titles land he bought alone as JTWROS with his adult son. For gift tax, this is:",["A gift of half the value","Not a gift","A gift of the full value","A gift only at death"],"Joint bank accounts are the exception: the gift happens when the other owner withdraws."],
+["es_own","Spouses in a common-law state own stock JTWROS: basis $100,000, FMV $400,000. One dies. Survivor's basis?",["$250,000","$400,000","$100,000","$200,000"],"Spousal JTWROS: half is included and stepped up. $50,000 + $200,000."],
+["es_own","Same facts in a community property state. Survivor's basis?",["$400,000","$250,000","$100,000","$300,000"],"Community property gets a full step-up on both halves."],
+["es_own","A brother paid the full price for land titled JTWROS with his sister. At his death, his gross estate includes:",["100% of the value","50% of the value","Nothing","Only his original cost"],"Non-spousal JTWROS follows the contribution rule."],
+
+["es_post","A qualified disclaimer must generally be made within how long of the transfer?",["9 months","6 months","12 months","15 months"],"It must be written, irrevocable, made before accepting benefits, and the property must pass without the disclaimant's direction."],
+["es_post","The alternate valuation date for estate assets is:",["6 months after death","9 months after death","1 year after death","The date probate opens"],"It can be elected only if it lowers both the gross estate and the tax."],
+["es_post","For property to qualify as QTIP, the surviving spouse must:",["Receive all income at least annually","Hold a general power of appointment","Be able to name the remainder beneficiaries","Get principal on demand"],"The executor elects QTIP on Form 706."],
+["es_post","To pass the deceased spouse's unused exclusion (DSUE), the executor must:",["Timely file Form 706 and elect portability","File Form 709","Fund a credit shelter trust","Request a private letter ruling"],"Required even when no estate tax is due."],
+["es_post","§6166 allows estate tax installments when a closely held business exceeds what share of the adjusted gross estate?",["35%","50%","25%","20%"],"Up to 14 years, with interest only for the first 4."],
+["es_post","A §303 stock redemption to pay death taxes and expenses is treated as:",["A sale or exchange","A dividend","Ordinary income","A tax-free gift"],"Requires the stock to exceed 35% of the adjusted gross estate. With the step-up, there's little or no gain."],
+["es_post","§2032A special use valuation applies to:",["Farm or closely held business real property","Marketable securities","Life insurance policies","Vacation homes"],"Land is valued at its current use, not its highest and best use."],
+["es_post","Estate administration expenses can be deducted on:",["Form 706 or Form 1041, not both","Both 706 and 1041","Form 706 only","The decedent's final 1040"],"Choose whichever return has the higher marginal rate."],
+["es_post","A surviving spouse may file a joint return for the year of death if:",["She has not remarried by year-end","A court approves it","The estate is under the exemption","The decedent died after June 30"],"Then qualifying surviving spouse status for 2 years if there's a dependent child."],
+["es_post","Medical expenses the estate pays within 1 year of death can be deducted on:",["The final Form 1040 or Form 706","Form 1041 only","Form 709","Nowhere"],"This is an election: choose one, not both."],
+["es_post","Why might a family member who is executor waive the executor's fee?",["Fees are taxable income, while inheriting is not","Fees are subject to gift tax","Waiving reduces probate time","Fees are not deductible"],"The fee is deductible to the estate, so compare the estate's tax rate with the executor's income tax rate."],
+
+["es_gst","For GST tax, a grandchild whose parent (the transferor's child) died before the transfer is:",["A non-skip person","Always a skip person","Exempt only under $1 million","A skip person only for trusts"],"The predeceased parent exception moves the grandchild up a generation."],
+["es_gst","An unrelated person is a skip person if more than how many years younger than the transferor?",["37.5","25","50","21"],"Within 12.5 years is the same generation; 12.5–37.5 years is one generation down."],
+["es_gst","A gift outright to a grandchild whose parent is alive is a:",["Direct skip","Taxable termination","Taxable distribution","Non-skip transfer"],"In a direct skip, the transferor pays the GST tax."],
+["es_gst","A trust pays income to a child for life, then the remainder goes to grandchildren. At the child's death, this is a:",["Taxable termination","Direct skip","Taxable distribution","Non-taxable event"],"In a termination, the trust pays the tax. A taxable distribution is a payment from a trust to a skip person while the trust continues."],
+["es_gst","The GST tax rate is:",["A flat rate equal to the top estate tax rate","The grandchild's income tax rate","Half the estate tax rate","Graduated by amount"],"It's on top of any gift or estate tax, which is why the GST exemption is allocated carefully."],
+["es_gst","Which transfer to a grandchild is excluded from GST tax regardless of amount?",["Tuition paid directly to the school","Any gift under the annual exclusion","Any transfer to a trust","Any bequest at death"],"Annual exclusion gifts in trust need specific features to get a zero inclusion ratio."],
+
+["es_intra","With a self-canceling installment note (SCIN), if the seller dies before it is paid off, the unpaid balance is:",["Excluded from the seller's gross estate","Included at face value","Included at FMV","Owed by the heirs"],"To be valid, the buyer pays a risk premium (higher price or interest)."],
+["es_intra","The main estate-tax risk of a QPRT is that:",["The grantor dies before the term ends","The home appreciates","The kids sell the home","Mortgage rates rise"],"Dying during the term pulls the home back into the estate. Afterward, the grantor must pay fair rent to stay."],
+["es_intra","The main estate-tax risk of a GRAT is that:",["The grantor dies during the term","The annuity is too high","Assets beat the §7520 rate","The beneficiaries disclaim"],"If assets beat the §7520 rate, the excess passes gift-tax-free."],
+["es_intra","When a GRAT is funded, the taxable gift equals:",["FMV transferred minus the PV of the retained annuity","The full FMV transferred","The total annuity payments","Always zero"],"A zeroed-out GRAT sets the annuity so the gift is about $0."],
+["es_intra","An intrafamily loan at an interest rate below the AFR generally creates:",["Imputed interest income and a gift of forgone interest","No tax consequences","A gift of the full loan","A taxable dividend"],"There's a de minimis exception for loans of $10,000 or less."],
+["es_intra","The main estate-planning benefit of a family limited partnership is:",["Valuation discounts for lack of control and marketability","Avoiding income tax","Complete creditor protection","Avoiding probate only"],"The parent stays general partner and controls the assets while gifting limited interests."],
+["es_intra","A parent sells a $300,000 property to a child for $200,000. This is:",["Part sale, part $100,000 gift","Entirely a gift","Entirely a sale","Nontaxable"],"A bargain sale. The parent recognizes gain on the sale portion."],
+["es_intra","At the seller's death, the unpaid balance of a regular installment note is:",["Included in the seller's gross estate","Excluded from the estate","Forgiven automatically","Taxed only to the buyer"],"That's the key difference from a SCIN."],
+
+["es_tax","A father deeds his home to his son but keeps the right to live there for life. At his death, the home is:",["Included in his gross estate at full FMV","Excluded because title passed","Included at its gift-date value","Included at 50%"],"§2036 retained life estate."],
+["es_tax","Assets in a revocable living trust at the grantor's death are:",["Included in the gross estate but avoid probate","Excluded from both","Subject to both probate and estate tax","Excluded but subject to probate"],"The grantor kept control."],
+["es_tax","A client gives an existing life policy to an ILIT and dies 2 years later. The death benefit is:",["Included in the gross estate","Excluded from the gross estate","Half included","Taxed as income to the trust"],"§2035 three-year rule. An ILIT-purchased new policy avoids it."],
+["es_tax","Which life insurance arrangement causes inclusion in the insured's estate?",["The insured keeps the right to change the beneficiary","An ILIT buys a new policy","An adult child owns and pays for it","The insured transferred it 5 years ago"],"Any incident of ownership at death, or within 3 years of death (§2042)."],
+["es_tax","In the estate tax calculation, adjusted taxable gifts are:",["Added to the taxable estate to compute the tentative tax","Subtracted from the gross estate","Ignored once gift tax is paid","Added to the gross estate"],"Gift tax previously paid is then credited."],
+["es_tax","Gift tax paid on gifts made within 3 years of death is:",["Added back to the gross estate","Deducted from the gross estate","Refunded to the estate","Ignored"],"This gross-up removes the benefit of deathbed gifts."],
+["es_tax","Which is deductible from the gross estate?",["Funeral expenses","The federal estate tax itself","Heirs' living expenses","Lifetime gifts"],"Deductible: funeral, administration expenses, debts, the marital deduction, and the charitable deduction."],
+["es_tax","A decedent held a general power of appointment over a trust. At death, the trust is:",["Included in the decedent's gross estate","Excluded","50% included","Included for income only"],"A limited (special) power, such as one restricted to an ascertainable standard, isn't included."],
+["es_tax","Assets in a bypass (credit shelter) trust at the surviving spouse's later death are:",["Excluded from the survivor's estate","Included in the survivor's estate","Taxed at 50%","Subject to GST tax"],"The survivor can receive income and HEMS distributions without inclusion."],
+["es_tax","A traditional IRA left to a child is:",["Included in the estate and taxable income to the child (IRD)","Only in the estate","Only taxable income","Neither"],"Income in respect of a decedent gets no step-up. The §691(c) deduction offsets the double tax."],
+
+["es_gift","A gift qualifies for the annual exclusion only if it is a:",["Present interest","Future interest","Gift to any trust","Gift of cash"],"Crummey powers turn gifts in trust into present interests."],
+["es_gift","Gifts between spouses who are both U.S. citizens are:",["Unlimited and tax-free","Limited to the annual exclusion","Taxable over the exemption","Subject to GST tax"],"Gifts to a noncitizen spouse have a higher annual exclusion, but no unlimited marital deduction."],
+["es_gift","A gift made by check is complete when:",["The bank pays the check","The check is written","The check is mailed","The year ends"],"Year-end gifts by check should be cashed before Dec 31 to count for that year."],
+["es_gift","A §2503(c) minor's trust must:",["Let the beneficiary take the assets at 21","Distribute all income annually","Terminate at 18","Name a parent as trustee"],"Gifts to it qualify for the annual exclusion without Crummey powers."],
+["es_gift","Which transfer is NOT a gift?",["Paying your minor child's support","Forgiving an adult child's loan","Adding a child to a deed","Paying an adult child's mortgage"],"Support obligations aren't gifts."],
+["es_gift","In a net gift, the donee agrees to:",["Pay the gift tax","Pay the donor's income tax","Return the gift later","Waive the annual exclusion"],"The taxable gift shrinks by the tax paid. The donor recognizes gain if the tax exceeds basis."],
+["es_gift","Which payment is NOT a taxable gift, regardless of amount?",["Tuition paid directly to the university","A check to a grandchild for tuition","Cash to an adult child","Paying a friend's credit card"],"§2503(e) covers tuition and medical expenses paid directly to the provider."],
+["es_gift","For a married couple to elect gift splitting:",["Both consent and a Form 709 is filed","The gift must come from joint property","The recipient must be family","The gift must be under the exclusion"],"Form 709 is required even when no tax is due."],
+["es_gift","What makes gifts to an irrevocable trust qualify for the annual exclusion?",["Crummey withdrawal powers","A spendthrift clause","A durable POA","Naming the grantor as trustee"],"Beneficiaries need notice and a reasonable window to withdraw."],
+["es_gift","A lapsed withdrawal power isn't a taxable gift if it doesn't exceed the greater of:",["$5,000 or 5% of trust corpus","$10,000 or 10%","The annual exclusion or 3%","$5,000 or 10% of income"],"The 5-and-5 rule."],
+
+["es_char","A charitable lead trust pays:",["Income to charity, then the remainder to family","Income to family, then the remainder to charity","Everything to charity","Everything to family"],"It's the reverse of a CRT, and is used to pass appreciation to heirs at a low gift tax cost."],
+["es_char","A CRAT must pay an annuity of at least:",["5% and no more than 50% of initial value","10% of initial value","3% of value","The §7520 rate"],"It's a fixed dollar amount, and no additions are allowed."],
+["es_char","The remainder interest in a CRT must be worth at least:",["10% of the initial value","5%","25%","50%"],"The same test applies to CRUTs."],
+["es_char","Which trust allows additional contributions after it's created?",["Charitable remainder unitrust","Charitable remainder annuity trust","GRAT","QPRT"],"A CRUT pays a fixed % of annually revalued assets."],
+["es_char","Cash gifts to a private nonoperating foundation are deductible up to:",["30% of AGI","60% of AGI","50% of AGI","20% of AGI"],"Appreciated capital gain property to a private foundation: 20% of AGI, generally at basis (except qualified stock)."],
+["es_char","Appreciated tangible personal property given to a charity that uses it unrelated to its purpose is deductible at:",["Cost basis","FMV","Zero","50% of FMV"],"A painting given to a museum to display is a related use (FMV). Given to a hospital to sell, it's an unrelated use (basis)."],
+["es_char","A donor-advised fund contribution is deductible:",["When contributed, with grants made later","Only when the fund makes grants","Never","Only up to 20% of AGI"],"DAFs are useful for bunching deductions into one year."],
+["es_char","Which charitable vehicle commingles gifts from many donors?",["Pooled income fund","CRAT","CLAT","Private foundation"],"Donors get a pro rata share of income for life; the charity gets the remainder."],
+["es_char","In a bargain sale to charity, the donor must:",["Allocate basis between the sale and gift portions","Use full basis against the sale","Recognize no gain","Treat it all as a gift"],"Basis × (amount realized ÷ FMV) is allocated to the sale portion."],
+["es_char","Which is the best way to make a $30,000 church gift?",["Donate $30,000 of XYZ shares","Donate the ABC shares","Sell XYZ, then donate the cash","Write a check from savings"],"Appreciated long-term stock gives an FMV deduction and avoids the gain. Loss stock should be sold to harvest the loss.","morales"],
+
+["es_docs","A durable power of attorney:",["Stays effective after the principal is incapacitated","Ends at incapacity","Survives the principal's death","Covers health decisions only"],"A non-durable POA ends at incapacity, which is exactly when it's needed."],
+["es_docs","A springing power of attorney takes effect:",["When a specified event occurs, usually incapacity","At signing","At death","After probate"],"Proving incapacity can delay it."],
+["es_docs","All powers of attorney terminate at:",["The principal's death","Incapacity","10 years","The start of probate"],"After death, the executor or trustee takes over."],
+["es_docs","A pour-over will:",["Moves probate assets into a revocable trust","Avoids probate entirely","Replaces the trust","Splits assets per stirpes"],"Assets poured over still go through probate."],
+["es_docs","A living will:",["States wishes about life-sustaining treatment","Transfers assets at death","Names a guardian for kids","Appoints a financial agent"],"A health care proxy (POA for health care) names who decides."],
+["es_docs","A holographic will is:",["Handwritten and signed by the testator","Spoken aloud","Video recorded","Signed by three witnesses"],"Only some states accept them. An oral will is nuncupative."],
+
+["es_prob","Which property passes outside of probate?",["Property held as JTWROS","Property held as tenants in common","Assets solely in the decedent's name","A sole proprietorship's assets"],"JTWROS passes by operation of law."],
+["es_prob","Real estate in a state other than the decedent's domicile typically requires:",["Ancillary probate","No probate at all","Federal probate","Probate in the home state only"],"Retitling the property into a revocable trust avoids this."],
+["es_prob","An estate passes per stirpes to three children; one predeceased, leaving two kids. Each of those grandchildren gets:",["1/6","1/5","1/4","1/3"],"The deceased child's 1/3 is split two ways."],
+
+// ================= RETIREMENT =================
+["rt_sep","A SEP must cover employees who are 21+, earned the minimum pay, and worked in:",["3 of the last 5 years","1 of the last 2 years","2 of the last 3 years","5 consecutive years"],"Same % of pay for everyone; employer contributions only."],
+["rt_sep","A key restriction on a SIMPLE IRA is that the employer:",["Can't maintain another plan at the same time","Must have fewer than 25 employees","Must make a 6% match","Can't allow deferrals"],"100 or fewer employees; a 3% match or 2% nonelective contribution."],
+["rt_sep","What penalty applies to a SIMPLE IRA distribution in the first 2 years of participation, before 59½?",["25%","10%","20%","50%"],"Rollovers out of a SIMPLE are also restricted during those 2 years."],
+["rt_sep","SEP contributions are vested:",["100% immediately","On a 3-year cliff","On a 2-to-6-year graded schedule","At age 59½"],"SIMPLE contributions are also immediately vested."],
+["rt_sep","A SEP can be set up and funded for a tax year as late as:",["The employer's filing deadline, plus extensions","Dec 31 of that year","Oct 1 of that year","April 15, regardless of extensions"],"That makes it a good last-minute plan."],
+["rt_sep","A new SIMPLE IRA for the current year must generally be set up by:",["October 1","December 31","The tax filing deadline","January 1"],"Employees need a 60-day election period."],
+["rt_sep","Sole proprietor, SEP plan rate 25%. The owner's own effective rate on net SE earnings is:",["20%","25%","15%","12.5%"],"0.25 ÷ 1.25 = 20%, applied after deducting half of SE tax."],
+["rt_sep","Which plan lets employees make salary deferrals?",["SIMPLE IRA","SEP","Money purchase pension","Defined benefit"],"New SARSEPs (salary-deferral SEPs) haven't been allowed since 1997."],
+
+["rt_dc","Assets in a rabbi trust for nonqualified deferred comp are:",["Subject to the employer's general creditors","Protected from the employer's creditors","Taxed to the employee when funded","Covered by ERISA funding rules"],"A rabbi trust protects against the employer changing its mind, not against insolvency."],
+["rt_dc","A secular trust differs from a rabbi trust in that its assets are:",["Out of creditors' reach and taxed to the employee now","Subject to creditors","Tax-deferred until paid","Owned by the employer"],"Funded and secure means the employee is taxed currently (economic benefit)."],
+["rt_dc","Under §409A, an election to defer pay generally must be made:",["Before the year the services are performed","Within 30 days after payment","Any time before payment","At retirement"],"Violations make the amount immediately taxable plus a 20% penalty."],
+["rt_dc","The employer deducts nonqualified deferred comp when:",["The employee includes it in income","It is credited to the account","It is earned","Never"],"This mismatch is the trade-off versus qualified plans."],
+["rt_dc","A top-hat plan is limited to:",["A select group of management or highly paid employees","All full-time employees","Union employees","Owners only"],"That's what exempts it from most ERISA requirements."],
+
+["rt_ira","IRA-to-IRA 60-day rollovers are limited to:",["One per 12 months across all IRAs","One per IRA per year","Unlimited","Two per year"],"Direct trustee-to-trustee transfers are unlimited."],
+["rt_ira","Which 10% penalty exception applies to IRAs but NOT to qualified plans?",["Qualified higher education expenses","Separation from service at 55","QDRO distributions","Disability"],"Also IRA-only: first-time home purchase ($10k) and health premiums while unemployed."],
+["rt_ira","Traditional IRA deductibility phases out by income when the taxpayer:",["Is an active participant in an employer plan","Is over 50","Also has a Roth IRA","Files jointly"],"A spouse who isn't a participant has a higher phase-out range."],
+["rt_ira","Which IRA investment is prohibited?",["Collectibles such as artwork","Real estate","Gold bullion meeting purity standards","Individual stocks"],"Buying collectibles is treated as a distribution."],
+["rt_ira","Borrowing from an IRA:",["Treats the whole IRA as distributed","Is allowed up to $50,000","Is allowed with 5-year repayment","Is penalty-free if repaid"],"It's a prohibited transaction. Plan loans exist only in employer plans."],
+["rt_ira","Traditional IRA contributions for a year can be made until:",["The tax filing deadline, without extensions","Dec 31 of that year","Oct 15 with an extension","Any time"],"There's no maximum age for contributing (SECURE Act)."],
+["rt_ira","A qualified Roth IRA distribution requires the 5-year rule and the owner to be:",["59½, disabled, deceased, or a first-time buyer","At least 55 and separated","Taking equal payments","Retired and over 62"],"Contributions come out first and are always tax- and penalty-free."],
+["rt_ira","$90,000 in pretax IRAs, plus a $10,000 nondeductible contribution, then $10,000 is converted to a Roth. How much is taxable?",["$9,000","$0","$10,000","$1,000"],"Pro rata: basis is 10% of the total, so 90% is taxable."],
+["rt_ira","Under 59½, each Roth conversion has its own:",["5-year clock for the 10% penalty","Annual dollar limit","Income limit test","1-year holding period"],"Converted amounts are withdrawn after contributions."],
+["rt_ira","Which inherited IRA beneficiary is subject to the 10-year rule?",["An adult child 25 years younger","The surviving spouse","A chronically ill beneficiary","A sibling 4 years younger"],"Eligible designated beneficiaries can stretch."],
+["rt_ira","A qualified charitable distribution from an IRA requires the owner to be at least:",["70½","73","59½","72"],"It's excluded from income and counts toward RMDs."],
+["rt_ira","Linda withdraws $20,000 from her Roth IRA this year. The tax result is:",["No tax or penalty","Tax and 10% penalty on $20,000","Tax only, no penalty","10% penalty only"],"Contributions ($50,000) come out first, tax- and penalty-free.","park"],
+
+["rt_qp","Which is a feature of pension plans but not profit-sharing plans?",["Mandatory annual funding","Heavy investment in employer stock","In-service withdrawals after 2 years","Flexible contributions"],"Pension: DB, cash balance, money purchase, target benefit. Profit-sharing: 401(k), stock bonus, ESOP, profit-sharing."],
+["rt_qp","Pension plans can invest no more than what share in employer securities?",["10%","25%","50%","No limit"],"Profit-sharing plans and ESOPs can hold much more."],
+["rt_qp","PBGC insurance covers:",["Defined benefit plans","401(k) plans","Profit-sharing plans","Money purchase plans"],"Cash balance plans are DB and are covered."],
+["rt_qp","A target benefit plan is a:",["Defined contribution pension plan with age-weighted contributions","Defined benefit plan","Profit-sharing plan","Nonqualified plan"],"Employees bear the investment risk. The 'target' isn't guaranteed."],
+["rt_qp","The most restrictive allowed eligibility rule (without immediate vesting) is:",["Age 21 and 1 year of service","Age 25 and 2 years","Age 18 and 6 months","Age 21 and 3 years"],"Requiring 2 years of service is allowed only with 100% immediate vesting."],
+["rt_qp","Under the ratio percentage coverage test, the NHCE coverage rate must be at least what share of the HCE rate?",["70%","50%","80%","100%"],"The alternative is the average benefits test."],
+["rt_qp","Social Security integration (permitted disparity) lets a plan:",["Give a higher rate on pay above the integration level","Exclude lower-paid workers","Skip nondiscrimination testing","Reduce Social Security benefits"],"It favors higher earners within legal limits."],
+["rt_qp","A new comparability (cross-tested) profit-sharing plan:",["Gives classes of employees different allocation rates","Gives everyone the same %","Is a defined benefit plan","Avoids all testing"],"It's tested on projected benefits and often favors older owners."],
+["rt_qp","A cash balance plan is classified as:",["A defined benefit plan","A defined contribution plan","A profit-sharing plan","A nonqualified plan"],"The employer bears the investment risk."],
+["rt_qp","A plan is top-heavy when key employees hold more than what share of benefits?",["60%","50%","80%","25%"],"That triggers minimum contributions and faster vesting."],
+["rt_qp","The slowest allowed vesting for employer contributions to a DC plan:",["3-year cliff or 2-to-6-year graded","5-year cliff or 3-to-7-year graded","2-year cliff or 1-to-5-year graded","Immediate only"],"The 5-year and 7-year schedules now apply only to DB plans."],
+["rt_qp","The traditional safe harbor 401(k) basic match is:",["100% of the first 3% plus 50% of the next 2%","50% of the first 6%","100% of the first 4%","3% vesting over 3 years"],"Or a 3% nonelective contribution. Both are immediately vested."],
+["rt_qp","The employer deduction limit for a profit-sharing plan is:",["25% of covered payroll","15% of covered payroll","100% of compensation","25% of each employee's pay"],"Employee deferrals don't count against the 25%."],
+["rt_qp","A 58-year-old owner with young employees wants the largest deductible contribution. Best fit?",["Defined benefit plan","SEP IRA","SIMPLE IRA","Money purchase plan"],"DB funding is driven by age and time to retirement."],
+["rt_qp","Which plan lets a C corp owner defer gain on selling stock to it (if it holds 30%+ after the sale)?",["ESOP","Stock bonus plan","Profit-sharing plan","Cash balance plan"],"§1042 rollover into qualified replacement property."],
+["rt_qp","Diego wants the largest deductible retirement contribution for himself at low cost for his young staff. Best choice?",["Cash balance plan","SEP IRA","SIMPLE IRA","Money purchase plan"],"Age-driven DB funding favors a 52-year-old owner. A SEP requires the same % for everyone.","morales"],
+
+["rt_fringe","Unused funds in a health FSA at year-end are:",["Forfeited, apart from a limited carryover or grace period","Rolled over in full","Refunded in cash","Taxed as wages"],"HSAs roll over in full; FSAs are use-it-or-lose-it."],
+["rt_fringe","A §125 cafeteria plan lets employees:",["Choose between cash and pre-tax qualified benefits","Defer pay into a 401(k)","Buy company stock at a discount","Take plan loans"],"The core of how health and dependent care FSAs work."],
+["rt_fringe","Which benefit is owned by the employee and fully portable?",["HSA","Health FSA","HRA","Dependent care FSA"],"FSAs and HRAs belong to the employer's plan."],
+["rt_fringe","Employer-paid group term life is taxable to the employee on coverage above:",["$50,000","$25,000","$100,000","Twice salary"],"Imputed income uses IRS Table I rates."],
+["rt_fringe","Which fringe benefit is taxable to the employee?",["Group term life over $50,000","Employer-paid health insurance","De minimis items like holiday gifts","Working condition fringe"],"The other three are excluded from income."],
+
+["rt_dist","The 'Rule of 55' penalty exception applies to:",["Employer plans after separation from service","Traditional IRAs at any age","Roth IRA earnings","SEP contributions"],"Rolling the plan to an IRA loses this exception."],
+["rt_dist","Under 72(t) equal periodic payments, payments must continue until the later of:",["5 years or age 59½","10 years or age 65","3 years or age 55","5 years or age 62"],"Changing the payments early triggers the penalty retroactively, plus interest."],
+["rt_dist","After a lump-sum distribution of employer stock, NUA is taxed when sold as:",["Long-term capital gain","Ordinary income","Tax-free","Short-term gain"],"Basis is ordinary income at distribution."],
+["rt_dist","A QDRO distribution to an ex-spouse from a qualified plan is:",["Free of the 10% penalty and taxed to the ex-spouse","Penalized and taxed to the participant","Tax-free to both","Taxed to the participant only"],"The alternate payee can also roll it over."],
+["rt_dist","The maximum qualified plan loan is generally the lesser of $50,000 or:",["50% of the vested balance","100% of the vested balance","25% of the vested balance","50% of the total balance"],"Repay within 5 years, unless the loan is for a principal home."],
+["rt_dist","For a client born in 1962, RMDs from a traditional IRA begin at age:",["75","73","72","70½"],"Born 1951–59: 73. Born 1960 or later: 75."],
+["rt_dist","Deferring the first RMD to April 1 of the following year means:",["Two RMDs are taxed in that following year","The first RMD is waived","A 25% penalty applies","The RMD is spread over 5 years"],"That can push the client into a higher bracket."],
+["rt_dist","An eligible rollover distribution paid to the participant (not a direct rollover) has mandatory withholding of:",["20%","10%","None","30%"],"Direct rollovers avoid withholding."],
+["rt_dist","On a $100,000 distribution she receives $80,000 after withholding. To avoid tax on all of it, within 60 days she must deposit:",["$100,000","$80,000","$20,000","Nothing"],"She must make up the $20,000 withheld from other funds, then recover it through her tax return."],
+
+["rt_stock","An employee exercises 1,000 NQSOs with a $20 strike when the stock is $50. Result?",["$30,000 ordinary income; basis $50/share","$30,000 LTCG; basis $20/share","No tax; basis $20/share","AMT adjustment of $30,000"],"The spread is wages at exercise."],
+["rt_stock","For an ISO sale to be a qualifying disposition, shares must be held at least:",["2 years from grant and 1 year from exercise","1 year from grant and 2 from exercise","1 year from exercise only","3 years from grant"],"A disqualifying disposition makes the spread ordinary income."],
+["rt_stock","An 83(b) election on restricted stock means the employee:",["Is taxed on FMV at grant, with later growth as capital gain","Is taxed at vesting","Avoids all tax","Gets ISO treatment"],"It must be filed within 30 days. If the stock is forfeited later, there's no deduction for the tax paid."],
+["rt_stock","The maximum discount in a qualified §423 ESPP is:",["15%","10%","20%","25%"],"The holding periods match ISOs: 2 years from grant and 1 year from purchase."],
+["rt_stock","Tom exercises all 2,000 ISOs and holds the shares. What does he report this year?",["$60,000 AMT adjustment, no regular income","$60,000 ordinary income","$60,000 LTCG","$90,000 AMT adjustment"],"($45 − $15) × 2,000.","reilly"],
+["rt_stock","Tom exercises his 1,000 NQSOs. What is his ordinary income?",["$25,000","$45,000","$20,000","$0"],"($45 − $20) × 1,000, reported as wages.","reilly"],
+
+["rt_admin","ERISA §404(c) relieves plan fiduciaries of liability for investment losses when:",["Participants control investments with diverse options and information","The plan uses target-date funds only","The employer matches 3%","The plan has fewer than 100 people"],"At least 3 diversified options and the ability to change them regularly."],
+["rt_admin","Which is a prohibited transaction?",["The plan sells property to a fiduciary","The plan buys index funds","A participant takes a plan loan by the rules","The employer makes a match"],"Dealings between the plan and disqualified persons are prohibited."],
+["rt_admin","The annual report filed for most qualified plans is:",["Form 5500","Form 990","Form 1099-R","Form 709"],"1099-R reports distributions."],
+["rt_admin","An owner wants flexible, discretionary contributions year to year. Best plan type?",["Profit-sharing plan","Money purchase plan","Defined benefit plan","Target benefit plan"],"Pension plans require annual funding."],
+
+["rt_fund","Need $60,000/yr in today's dollars for 25 years, starting now. Inflation 3%, return 6%. Capital needed?",["$1,085,764","$1,055,034","$1,076,133","$813,021"],"Rate = 1.06/1.03 − 1 = 2.9126%. BEGIN mode: N=25, PMT=60,000 → $1,085,764. END mode: $1,055,034. Using 3% gives $1,076,133."],
+
+["rt_ss","FRA 67. Claiming at 62 pays what share of PIA?",["70%","75%","80%","62%"],"36 × 5/9% + 24 × 5/12% = 30% reduction."],
+["rt_ss","FRA 67. Delaying to 70 pays what share of PIA?",["124%","132%","120%","108%"],"8% per year."],
+["rt_ss","A spouse's benefit at the spouse's FRA is up to:",["50% of the worker's PIA","100% of the worker's PIA","75% of the worker's PIA","50% plus delayed credits"],"There are no delayed credits on spousal benefits."],
+["rt_ss","Medicare Part B primarily covers:",["Physician and outpatient services","Inpatient hospital stays","Prescription drugs","Custodial nursing care"],"Medicare doesn't cover custodial care."],
+["rt_ss","Which Social Security option is generally available to Linda as a widow?",["Take one benefit now, switch to the other later","Collect both in full at once","Claim survivor benefits only after 67","Add the two together at 70"],"Survivor from 60 or her own from 62, then switch.","park"],
+
+["rt_403","Which plan's distributions after separation are free of the 10% penalty at any age?",["Governmental 457(b)","403(b)","401(k)","Traditional IRA"],"Except amounts rolled in from other plans."],
+["rt_403","Which source can Linda tap now with no 10% early-withdrawal penalty?",["Her governmental 457(b)","Earnings in her Roth IRA","An IRA she rolls her 403(b) into","A new SEP IRA"],"Rolling the 403(b) to an IRA would lose the Rule of 55.","park"],
+
+// ================= INVESTMENTS =================
+["iv_fx","A U.S. investor's foreign stock rises 10% in local currency while that currency falls 10% against the dollar. Return in dollars?",["−1.0%","0.0%","+1.0%","−10.0%"],"(1.10 × 0.90) − 1 = −1%. Returns multiply; they don't add."],
+["iv_fx","A U.S. investor in foreign bonds benefits when:",["The foreign currency strengthens against the dollar","The dollar strengthens","Foreign interest rates rise","Foreign inflation rises"],"A stronger foreign currency converts back to more dollars."],
+["iv_fx","Exchange rate risk on a foreign holding can be hedged with:",["Currency forwards or futures","Treasury bills","Preferred stock","Equity put options"],"International diversification adds currency risk on top of market risk."],
+["iv_fx","A foreign stock gains 5% locally and the foreign currency rises 4% against the dollar. U.S. investor's return?",["9.2%","9.0%","1.0%","20.0%"],"1.05 × 1.04 − 1 = 9.2%."],
+
+["iv_yield","A 5-year bond with a 6% semiannual coupon trades at $920. Yield to maturity?",["7.97%","6.52%","6.00%","8.70%"],"N=10, PMT=30, PV=−920, FV=1,000 → I/Y = 3.985% × 2 = 7.97%. 6.52% is the current yield."],
+["iv_yield","For a bond trading at a premium:",["Coupon > current yield > YTM","YTM > current yield > coupon","Current yield > coupon > YTM","All three are equal"],"Discount bonds reverse the order."],
+["iv_yield","A 6% coupon bond is priced at $950. Current yield?",["6.32%","6.00%","5.70%","6.50%"],"$60 ÷ $950."],
+["iv_yield","Client in the 32% bracket; 3.5% muni. Taxable-equivalent yield?",["5.15%","4.62%","4.83%","5.47%"],"3.5% ÷ 0.68."],
+["iv_yield","Client in the 24% bracket; 4% muni. Taxable-equivalent yield (federal only)?",["5.26%","4.96%","3.04%","5.00%"],"4% ÷ 0.76. Don't multiply (that gives 4.96%)."],
+["iv_yield","Interest on U.S. Treasury bonds is:",["Federally taxable, exempt from state tax","Exempt from both","Taxable by both","Exempt federally only"],"In-state munis are exempt from both."],
+["iv_yield","Yield to call matters most for a callable bond trading at:",["A premium","A discount","Par","Below its conversion value"],"Premium bonds are likely to be called when rates fall."],
+["iv_yield","YTM assumes coupons are reinvested at:",["The YTM itself","The coupon rate","The risk-free rate","Zero"],"That's why reinvestment risk matters."],
+
+["iv_re","A property's NOI is $100,000 and the cap rate is 8%. Value?",["$1,250,000","$800,000","$1,080,000","$8,000,000"],"Value = NOI ÷ cap rate."],
+["iv_re","To avoid corporate tax, a REIT must distribute at least what share of taxable income?",["90%","75%","50%","100%"],"75% of assets and income must be real-estate related."],
+["iv_re","Most REIT dividends are taxed as:",["Ordinary income (non-qualified)","Qualified dividends","Long-term capital gains","Tax-free income"],"REITs usually belong in tax-advantaged accounts."],
+["iv_re","Which REIT type holds loans and is most sensitive to interest rates?",["Mortgage REIT","Equity REIT","Hybrid REIT","Healthcare REIT"],"Equity REITs own properties."],
+["iv_re","The main drawback of owning real estate directly is:",["Illiquidity and high transaction costs","Poor inflation protection","No use of leverage","No tax benefits"],"REITs trade like stocks and offer liquidity."],
+
+["iv_margin","Buy at $60 with 50% initial margin and 30% maintenance. Margin call price?",["$42.86","$30.00","$42.00","$45.00"],"Loan ÷ (1 − maintenance) = 30 ÷ 0.70."],
+["iv_margin","Short at $50, 50% initial margin, 30% maintenance. Margin call when the stock rises to:",["$57.69","$65.00","$55.00","$75.00"],"Call price = 50 × 1.5 ÷ 1.3 = $57.69."],
+["iv_margin","Reg T initial margin for stock purchases is:",["50%","25%","30%","100%"],"Maintenance is set by FINRA and brokers (at least 25%)."],
+["iv_margin","The maximum loss on a short sale is:",["Unlimited","The sale price","50% of the position","The premium received"],"A buy-stop order can limit it."],
+
+["iv_ret","Bought at $40, received a $1 dividend, sold at $44. Holding period return?",["12.5%","10.0%","11.4%","2.5%"],"(44 − 40 + 1) ÷ 40."],
+["iv_ret","+20% in year 1, −10% in year 2. Geometric mean return?",["3.92%","5.00%","4.50%","2.00%"],"√(1.20 × 0.90) − 1."],
+["iv_ret","$300 invested monthly at prices of $10, $15, and $20. Average cost per share?",["$13.85","$15.00","$13.33","$16.15"],"Shares: 30 + 20 + 15 = 65. $900 ÷ 65. $15 is the average price, not cost."],
+["iv_ret","Buy 1 share at $50; a year later buy another at $60; a year after that, sell both at $70. No dividends. Dollar-weighted return?",["17.76%","18.32%","20.00%","40.00%"],"CF0 = −50, CF1 = −60, CF2 = +140 → IRR = 17.76%. The time-weighted return is 18.32%."],
+["iv_ret","Time-weighted return is preferred for evaluating a manager because it:",["Removes the effect of client cash flows","Includes the timing of deposits","Is always higher","Uses after-tax returns"],"Dollar-weighted reflects the investor's own timing."],
+["iv_ret","Nominal return 7%, inflation 3%. Exact real return?",["3.88%","4.00%","4.12%","10.21%"],"1.07 ÷ 1.03 − 1."],
+["iv_ret","Portfolio: 50% returned 10%, 30% returned 6%, 20% returned −2%. Weighted return?",["6.4%","4.7%","8.0%","5.2%"],"5.0 + 1.8 − 0.4. 4.7% is the unweighted average."],
+
+["iv_hybrid","A $1,000 convertible bond converts into 25 shares; the stock is $45. Conversion value?",["$1,125","$1,000","$1,045","$40"],"25 × $45."],
+["iv_hybrid","Same bond: conversion price?",["$40","$45","$25","$1,125"],"Par ÷ conversion ratio = $1,000 ÷ 25."],
+["iv_hybrid","Preferred stock pays $5 a year; required return 8%. Value?",["$62.50","$40.00","$5.40","$66.67"],"Perpetuity: D ÷ r."],
+["iv_hybrid","Cumulative preferred means:",["Missed dividends must be paid before common dividends","It shares in extra profits","It converts to common","It carries voting rights"],"Participating preferred shares in extra profits."],
+["iv_hybrid","Corporations favor holding preferred stock because of:",["The dividends-received deduction","Voting rights","A fixed maturity","Tax-free interest"],"Individuals get no such benefit."],
+["iv_hybrid","Compared with straight bonds from the same issuer, convertibles usually offer:",["Lower coupons","Higher coupons","No coupon","Floating coupons"],"Investors give up yield for the conversion option."],
+
+["iv_anal","Profit margin 5%, asset turnover 2.0, equity multiplier 1.5. ROE?",["15%","10%","7.5%","8.5%"],"DuPont: 5% × 2.0 × 1.5."],
+["iv_anal","If markets are weak-form efficient, which can't earn excess returns?",["Technical analysis","Fundamental analysis","Inside information","Indexing"],"Weak form: prices reflect past price and volume data."],
+["iv_anal","If markets are semi-strong efficient, which can't consistently earn excess returns?",["Fundamental analysis of public data","Trading on inside information","Any investing","Index investing"],"Only inside information could work."],
+["iv_anal","Strong-form efficiency means:",["Even inside information can't produce excess returns","Only technical analysis fails","Only fundamental analysis fails","Markets are always wrong"],"Insider trading studies suggest markets aren't strong-form efficient."],
+["iv_anal","Technical analysts read a high short-interest ratio as:",["Bullish, since shorts must eventually buy","Bearish","Neutral","A signal about bonds"],"It's a contrarian indicator. So is odd-lot theory."],
+["iv_anal","Dow Theory is a form of:",["Technical analysis","Fundamental analysis","Behavioral finance","Arbitrage"],"It confirms trends using the industrial and transportation averages."],
+["iv_anal","A top-down fundamental analysis starts with:",["The economy, then industry, then company","The company's financials","Chart patterns","Insider trades"],"Bottom-up starts with the company."],
+
+["iv_beh","A client holds losing stocks and quickly sells winners. This is:",["The disposition effect","Herding","Anchoring","Recency bias"],"It comes from loss aversion."],
+["iv_beh","Prospect theory says people facing a sure loss tend to be:",["Risk-seeking","Risk-averse","Risk-neutral","Indifferent to framing"],"Concave for gains, convex for losses."],
+["iv_beh","Treating a tax refund as 'fun money' while carrying credit card debt is:",["Mental accounting","Anchoring","Herding","Overconfidence"],"Money is fungible; the debt costs more than the fun."],
+["iv_beh","Trading too often because of overestimated skill shows:",["Overconfidence","Loss aversion","Regret avoidance","Mental accounting"],"It's linked to lower net returns."],
+["iv_beh","Fixing on a stock's purchase price as the reference point is:",["Anchoring","Herding","Recency","Framing"],"Ask: would I buy it today at this price?"],
+
+["iv_risk","Diversification can largely eliminate:",["Unsystematic risk","Interest rate risk","Market risk","Purchasing power risk"],"Systematic risks don't diversify away."],
+["iv_risk","The risk that coupons must be reinvested at lower rates is:",["Reinvestment rate risk","Purchasing power risk","Default risk","Liquidity risk"],"Zero-coupon bonds have none."],
+["iv_risk","Risk from a company's use of debt is:",["Financial risk","Business risk","Market risk","Exchange rate risk"],"Business risk comes from the nature of operations."],
+["iv_risk","Which is a systematic risk?",["Interest rate risk","Business risk","Financial risk","Default risk"],"Also market, purchasing power, exchange rate, and reinvestment risk."],
+["iv_risk","Real estate is usually marketable but not very:",["Liquid","Risky","Taxable","Valuable"],"Liquid means it can be sold quickly near fair value."],
+
+["iv_val","A stock just paid $2.00, growing 5% forever. Required return 10%. Value?",["$42.00","$40.00","$20.00","$13.33"],"D₁ = $2.10; $2.10 ÷ 0.05."],
+["iv_val","Stock at $50; next dividend $2; growth 4%. Implied required return?",["8%","4%","12%","6%"],"D₁/P + g."],
+["iv_val","D₀ = $2.00, growing 20% for 2 years, then 5% forever. Required return 12%. Value today?",["$38.88","$43.20","$30.00","$48.48"],"D₁ = 2.40, D₂ = 2.88, P₂ = 2.88 × 1.05 ÷ 0.07 = 43.20. PV of 2.40 at year 1 plus PV of (2.88 + 43.20) at year 2."],
+["iv_val","CAPM: beta 1.3, risk-free rate 4%, market return 10%. Required return?",["11.8%","13.0%","9.2%","17.0%"],"4 + 1.3 × 6."],
+
+["iv_sel","A client needs a house down payment in 18 months. Best choice?",["Short-term Treasuries or CDs","A growth stock fund","Long-term corporate bonds","A REIT fund"],"Short horizon: protect principal."],
+["iv_sel","Strategic asset allocation differs from tactical in that it:",["Sets long-term targets and rebalances to them","Shifts weights on market forecasts","Avoids bonds","Uses only index funds"],"Tactical makes short-term deviations from those targets."],
+["iv_sel","Which is the best way to address Linda's fear of an early market drop?",["Keep 1–3 years of spending in cash","Move everything to equities","Put it all in long-term bonds","Take larger early withdrawals"],"Sequence-of-returns risk: avoid forced selling in a downturn.","park"],
+
+["iv_funds","Why are ETFs usually more tax-efficient than mutual funds?",["In-kind redemptions reduce capital gains","They only hold munis","They can't own dividend stocks","Their gains are taxed at 0%"],"They can shed low-basis shares without selling."],
+["iv_funds","A closed-end fund's market price:",["Can trade at a premium or discount to NAV","Always equals NAV","Is set once a day at NAV","Can't change intraday"],"Open-end funds transact at NAV."],
+["iv_funds","A unit investment trust (UIT) has:",["A fixed, unmanaged portfolio","An active manager","Unlimited share creation","No termination date"],"It has a set termination date."],
+["iv_funds","A mutual fund's 12b-1 fee pays for:",["Marketing and distribution","Portfolio management","Custody","Audit costs"],"It's included in the expense ratio."],
+
+["iv_bond","Modified duration 7. Yields rise 1 percentage point. Price change?",["About −7%","About +7%","About −1%","About −14%"],"%ΔP ≈ −MD × Δy."],
+["iv_bond","Which bond has the highest duration, all else equal?",["20-year zero-coupon","20-year 8% coupon","10-year zero-coupon","10-year 8% coupon"],"Duration rises with maturity and falls with coupon."],
+["iv_bond","Positive convexity means that when yields fall, prices:",["Rise more than duration predicts","Rise less than predicted","Fall","Don't change"],"Callable bonds can show negative convexity."],
+["iv_bond","Zero-coupon bonds in a taxable account create:",["Taxable imputed interest each year","Tax-exempt income","Short-term gains","Higher coupons"],"OID 'phantom income.'"],
+["iv_bond","The inflation adjustment on TIPS principal is:",["Taxable each year even though it isn't paid","Tax-free","Taxed only at maturity","Taxed as capital gain"],"Like phantom income. I Bonds can defer tax until redemption."],
+["iv_bond","Which agency security is backed by the full faith and credit of the U.S.?",["GNMA","FNMA","FHLMC","FHLB"],"GNMA pass-throughs still carry prepayment risk."],
+["iv_bond","An inverted yield curve means:",["Short-term rates are above long-term rates","Long rates are well above short","All rates are equal","Rates are negative"],"It is often seen before recessions."],
+
+["iv_opt","A client owns stock, wants more income, and accepts capping the upside. Best strategy?",["Write covered calls","Buy protective puts","Buy calls","Sell short"],"The stock is called away above the strike."],
+["iv_opt","Call option: strike $50, stock $58, premium $10. Time value?",["$2","$8","$10","$18"],"Intrinsic is $8, so time value is $2."],
+["iv_opt","Buying a put on stock you own is a:",["Protective put that sets a floor","Covered call","Naked put","Collar's short leg"],"The premium is the cost of the insurance."],
+
+["iv_rap","10% return, 14% standard deviation, 3% risk-free rate. Sharpe ratio?",["0.50","0.71","0.21","0.64"],"(10 − 3) ÷ 14."],
+["iv_rap","12% return, 4% risk-free rate, beta 1.6. Treynor ratio?",["5.0","7.5","2.0","0.5"],"(12 − 4) ÷ 1.6."],
+["iv_rap","Which measures return above what CAPM predicts for the portfolio's beta?",["Jensen's alpha","Sharpe ratio","R-squared","Standard deviation"],"α = rp − [rf + β(rm − rf)]."],
+["iv_rap","Before using beta or Treynor to evaluate a fund, check:",["R-squared","Coefficient of variation","Sortino ratio","Standard deviation"],"If R² is low (below ~70%), use Sharpe."],
+["iv_rap","Fund A: mean 8%, σ 12%. Fund B: mean 10%, σ 18%. Which has less risk per unit of return?",["Fund A (CV 1.5)","Fund B (CV 1.8)","Fund B (CV 0.56)","They are equal"],"CV = σ ÷ mean."],
+["iv_rap","60% in X (σ 20%), 40% in Y (σ 10%), correlation 0. Portfolio σ?",["12.65%","16.00%","14.00%","10.20%"],"√(0.0144 + 0.0016)."],
+
+// ================= INSURANCE =================
+["in_pol","A.M. Best, Moody's, S&P and Fitch rate insurers on:",["Financial strength / claims-paying ability","Customer service","Premium levels","Policy features"],"Use more than one rating agency."],
+["in_pol","Participating policies that pay dividends are typically issued by:",["Mutual insurers","Stock insurers","Reinsurers","Fraternal lodges only"],"Mutual insurers are owned by policyholders. Dividends are a return of premium and generally aren't taxable."],
+["in_pol","If an insurer becomes insolvent, policyholders are protected up to limits by:",["State guaranty associations","The FDIC","SIPC","The PBGC"],"Limits vary by state."],
+["in_pol","A key drawback of replacing an existing life policy is that:",["The contestability and suicide periods restart","Cash value is always lost","The new policy has no surrender charges","Premiums always rise"],"Use a 1035 exchange to avoid tax on the cash value."],
+
+["in_ltc","A tax-qualified LTC policy pays when the insured can't perform at least:",["2 of 6 ADLs, or has severe cognitive impairment","3 of 6 IADLs for 30 days","1 ADL with a doctor's note","4 of 6 ADLs for one year"],"Expected to last 90+ days."],
+["in_ltc","An LTC elimination period is:",["The number of days of care before benefits begin","The total benefit period","A waiting period after buying","A premium grace period"],"A longer elimination period means a lower premium."],
+["in_ltc","LTC Partnership policies help by:",["Protecting assets from Medicaid spend-down dollar-for-dollar","Lowering premiums","Covering acute care","Paying Medicare premiums"],"Each $1 of benefits paid protects $1 of assets."],
+["in_ltc","For a 50-year-old buying LTC, the most valuable inflation rider is usually:",["Compound inflation protection","Simple inflation protection","No rider","A return-of-premium rider"],"There's a long time before the likely claim."],
+["in_ltc","Medicare covers custodial nursing home care:",["Not at all","Fully, with no limit","Up to 100 days","For one year"],"Medicare covers up to 100 days of skilled nursing after a 3-day hospital stay."],
+["in_ltc","The Medicaid look-back period for asset transfers is:",["60 months","36 months","24 months","12 months"],"Transfers inside the window delay eligibility."],
+
+["in_di","Which disability definition is most favorable to the insured?",["Own occupation","Any occupation","Modified own occupation","Social Security definition"],"Social Security's definition is the strictest."],
+["in_di","Which renewal provision guarantees both coverage and premiums?",["Noncancelable","Guaranteed renewable","Conditionally renewable","Optionally renewable"],"Guaranteed renewable can raise premiums by class."],
+["in_di","A residual disability benefit pays when the insured:",["Returns to work with reduced income","Is totally disabled","Dies","Retires early"],"It pays in proportion to the income lost."],
+["in_di","Lengthening the elimination period on a DI policy:",["Lowers the premium","Raises the premium","Has no effect","Raises the benefit"],"Match it to the emergency fund."],
+["in_di","Social Security disability benefits begin after a waiting period of:",["5 full months","3 months","12 months","30 days"],"Disability must be expected to last 12+ months or result in death."],
+["in_di","The employer pays all DI premiums and doesn't include them in pay. Benefits are:",["Taxable to the employee","Tax-free to the employee","Taxed as capital gains","Taxable above $50,000"],"Employee-paid after-tax premiums mean tax-free benefits."],
+["in_di","If Tom becomes disabled, his group LTD benefits will be:",["Fully taxable","Tax-free","Taxable above 60% of pay","Taxed as capital gains"],"The employer pays the premium.","reilly"],
+
+["in_pc","A $400,000 home is insured for $240,000 under an 80% coinsurance clause. Ignoring the deductible, what pays on a $100,000 loss?",["$75,000","$60,000","$100,000","$80,000"],"240 ÷ 320 × 100,000."],
+["in_pc","Actual cash value equals:",["Replacement cost minus depreciation","Current market value","Full replacement cost","An agreed value"],"Replacement cost coverage pays to replace without depreciation."],
+["in_pc","Under pure comparative negligence, a plaintiff 30% at fault with $100,000 of damages recovers:",["$70,000","$100,000","$0","$30,000"],"Under contributory negligence, any fault means no recovery."],
+["in_pc","Vicarious liability means:",["Being liable for another's negligence, such as an employee's","Liability for ultra-hazardous acts","Liability under a contract","Liability for slander"],"For example, a parent liable for a child driver."],
+["in_pc","Strict (absolute) liability applies to:",["Ultra-hazardous activities like keeping wild animals","Ordinary driving","Contract breaches","Medical malpractice"],"No proof of negligence is needed."],
+["in_pc","Which is NOT an element of negligence?",["Intent to harm","Duty owed","Breach of duty","Damages"],"Duty, breach, proximate cause, damages."],
+["in_pc","The personal auto policy generally excludes coverage while the car is:",["Carrying passengers for a fee","Driven by a family member","Rented to the insured","Driven in another state"],"Rideshare drivers need an endorsement."],
+["in_pc","Which homeowners form is designed for a condo unit owner?",["HO-6","HO-4","HO-3","HO-8"],"HO-4 is renters."],
+["in_pc","Under an HO-3, personal property is covered:",["On a named-perils basis","On an open-perils basis","At agreed value","Always at replacement cost"],"HO-5 is open perils on both."],
+["in_pc","In a PAP, damage to the insured's own car from a collision falls under:",["Part D","Part A","Part B","Part C"],"A liability, B med pay, C uninsured motorist, D physical damage."],
+["in_pc","Auto limits 100/300/50. At fault, one person has $150,000 of injuries. The policy pays:",["$100,000","$150,000","$300,000","$50,000"],"Per-person limit."],
+["in_pc","An umbrella policy typically requires the insured to:",["Carry minimum underlying liability limits","Drop auto liability","Own commercial property","Insure one home only"],"It also covers some claims the underlying policies exclude."],
+["in_pc","Which homeowners form fits Tom's condo?",["HO-6","HO-3","HO-4","HO-5"],"The association's master policy covers the building.","reilly"],
+
+["in_biz","A cross-purchase buy-sell with 4 owners needs how many policies?",["12","4","6","8"],"n(n − 1). A trusteed cross-purchase reduces the count."],
+["in_biz","An advantage of cross-purchase over entity redemption for surviving owners:",["They get a higher basis in the shares bought","Fewer policies are needed","The company pays premiums","There are no transfer-for-value issues"],"In a redemption, the survivors' basis doesn't increase."],
+["in_biz","Key person life insurance premiums are:",["Not deductible, and proceeds are generally tax-free","Deductible, and proceeds taxable","Taxable to the key employee","Deductible only for term"],"Notice and consent rules apply for employer-owned policies."],
+["in_biz","A §162 executive bonus plan is:",["Deductible to the employer, taxable to the employee","Not deductible, tax-free to the employee","Deductible and tax-free","Owned half by each"],"The employee owns the policy."],
+["in_biz","Which transfer is an exception to the transfer-for-value rule?",["Transfer to the insured","Sale to an unrelated investor","Sale to the insured's sibling","Transfer to a creditor for value"],"Also: a partner, a partnership, a corporation where the insured is an officer or shareholder."],
+["in_biz","Split-dollar life insurance:",["Splits premiums and benefits between employer and employee","Covers two insureds","Is a type of term policy","Is owned by a charity"],"It's governed by economic benefit or loan regimes."],
+
+["in_life","Which universal life option pays the face amount plus the cash value?",["Option B","Option A","Option C","Option 1"],"Option A is level."],
+["in_life","A policy that fails the 7-pay test becomes a MEC. Loans and withdrawals are:",["Taxed earnings-first, plus 10% penalty before 59½","Tax-free up to basis","Prohibited","Taxed only at death"],"The death benefit is still tax-free."],
+["in_life","Which exchange is NOT allowed tax-free under §1035?",["Annuity to life insurance","Life insurance to annuity","Life to life","Annuity to annuity"],"You can move down from life to annuity, not up."],
+["in_life","Wife owns a policy on her husband; their son is beneficiary. When the husband dies, the result is:",["A gift from the wife to the son","Estate tax in the husband's estate","Income tax to the son","No tax consequence"],"The Goodman triangle."],
+["in_life","Partial withdrawals from a post-1982 nonqualified deferred annuity are taxed:",["Earnings first, as ordinary income","Basis first, tax-free","Pro rata","As LTCG"],"The exclusion ratio applies once annuitized."],
+["in_life","Annuity: $60,000 invested, expected return $100,000 ($500/month). How much of each payment is taxable?",["$200","$300","$500","$0"],"Exclusion ratio 60%."],
+["in_life","Which is NOT a nonforfeiture option?",["A policy loan","Cash surrender","Reduced paid-up","Extended term"],"Extended term is the default if the owner doesn't choose."],
+["in_life","The incontestability clause bars contesting misstatements after:",["2 years","1 year","5 years","31 days"],"The suicide clause is also usually 2 years."],
+["in_life","The standard grace period for late life insurance premiums is:",["31 days","2 years","60 days","10 days"],"If the insured dies during it, the overdue premium is deducted from the benefit."],
+["in_life","Second-to-die (survivorship) life insurance is often used to:",["Pay estate taxes at the second death","Fund a buy-sell","Replace income at the first death","Insure children"],"The marital deduction defers estate tax until the second death."],
+["in_life","How can the $1M death benefit best be kept out of Diego's estate?",["Have a new ILIT buy a new policy","Transfer the current policy to an ILIT","Name Ana beneficiary only","Convert the term to whole life"],"Transferring the existing policy triggers the 3-year rule.","morales"],
+
+["in_health","To make deductible HSA contributions, a person must:",["Be covered by a qualifying HDHP","Be enrolled in Medicare Part A","Have an employer FSA","Be under age 55"],"Medicare enrollment stops new contributions."],
+["in_health","COBRA for a spouse after divorce lasts up to:",["36 months","18 months","24 months","12 months"],"18 months for job loss."],
+["in_health","Under the birthday rule, a child's primary plan is the parent whose:",["Birthday comes earlier in the year","Age is older","Plan is cheaper","Employer is larger"],"It's based on month and day, not birth year."],
+["in_health","A PPO, unlike a typical HMO, lets members:",["Go out of network at a higher cost","Skip all copays","Avoid deductibles","Use only one doctor"],"HMOs usually require a primary care physician and referrals."],
+["in_health","Medigap policies supplement:",["Original Medicare (Parts A and B)","Medicare Advantage","Medicaid","Part D only"],"You can't use Medigap with Medicare Advantage."],
+
+["in_law","Ambiguities in an insurance policy are read in the insured's favor because it is a contract of:",["Adhesion","Indemnity","Utmost good faith","Aleatory exchange"],"The insurer wrote it, and the insured takes it as is."],
+["in_law","An insurance contract is aleatory, meaning:",["The values exchanged are unequal and depend on chance","Only one side makes promises","Ambiguity favors the insured","It indemnifies actual loss"],"Unilateral means only the insurer makes enforceable promises."],
+["in_law","A statement that must be literally true or the contract can be voided is a:",["Warranty","Representation","Concealment","Waiver"],"A representation only needs to be substantially true."],
+["in_law","Insurance is regulated primarily by the states under the:",["McCarran-Ferguson Act","Dodd-Frank Act","ERISA","Securities Act of 1933"],"Variable products are also regulated as securities."],
+["in_law","For life insurance, insurable interest must exist:",["At policy inception","At the insured's death","At both times","Never"],"For property insurance, it must exist at the time of loss."],
+["in_law","After paying the insured's claim, the insurer sues the at-fault driver. This is:",["Subrogation","Indemnity","Insurable interest","Utmost good faith"],"It prevents double recovery."],
+
+["in_risk","Low-frequency, high-severity risks are best handled by:",["Transfer through insurance","Retention","Avoidance","Reduction only"],"High frequency and high severity: avoid. Low and low: retain."],
+
+// ================= FUNDAMENTALS =================
+["fp_irr","A project costs $10,000 and returns $3,000 a year for 5 years. Discount rate 8%. NPV?",["$1,978","$5,000","$1,372","$11,978"],"3,000 × annuity factor (8%, 5) = 11,978 − 10,000. $1,372 uses 10%."],
+["fp_irr","Same project: IRR?",["15.24%","30.00%","10.00%","8.00%"],"CF0 = −10,000, CF1–5 = 3,000 → IRR. 30% is the simple yield."],
+["fp_irr","An investment should be accepted when:",["NPV is positive (IRR exceeds the required return)","IRR is below the required return","NPV is negative","Payback exceeds its life"],"When NPV is zero, IRR equals the discount rate."],
+["fp_irr","IRR assumes interim cash flows are reinvested at:",["The IRR itself","The required return","The risk-free rate","Zero"],"NPV assumes reinvestment at the discount rate, which is more realistic."],
+
+["fp_tvm","A client needs $50,000 in 10 years. At 6%, how much to invest today?",["$27,920","$31,250","$29,600","$25,840"],"50,000 ÷ 1.06¹⁰."],
+["fp_tvm","Effective annual rate of 12% compounded monthly?",["12.68%","12.00%","12.36%","12.55%"],"1.01¹² − 1."],
+["fp_tvm","Monthly payment on a $300,000, 30-year mortgage at 6%?",["$1,799","$1,500","$2,532","$1,650"],"N=360, I=0.5, PV=300,000."],
+
+["fp_gen","In CFP Board's 7-step process, what follows 'Identifying and Selecting Goals'?",["Analyzing current course and alternatives","Developing recommendations","Understanding circumstances","Presenting recommendations"],"Understand → Goals → Analyze → Develop → Present → Implement → Monitor."],
+["fp_gen","When must a CFP® professional act as a fiduciary?",["Whenever providing financial advice","Only when delivering a written plan","Only when charging a fee","Only for discretionary assets"],"At all times when giving financial advice."],
+["fp_gen","Which is NOT part of the fiduciary duty in CFP Board's Standards?",["Duty of Confidentiality","Duty of Loyalty","Duty of Care","Duty to Follow Client Instructions"],"Confidentiality is a separate standard."],
+["fp_gen","An adviser with $40M AUM and no exemption generally registers with:",["The state securities regulator","The SEC only","FINRA","Both SEC and FINRA"],"$100M+: SEC."],
+["fp_gen","A 529 rollover to the beneficiary's Roth IRA requires the 529 to be:",["Open at least 15 years","Funded within the last 5 years","Owned by the beneficiary","Under $35,000"],"$35,000 lifetime cap."],
+
+["fp_psy","'I know I should save more, but I'm not ready.' Transtheoretical Model stage?",["Contemplation","Precontemplation","Preparation","Maintenance"],"Aware but ambivalent."],
+["fp_psy","Which Klontz money script ties to 'more money will solve my problems'?",["Money worship","Money avoidance","Money vigilance","Money status"],"Linked to overspending."]
 ];
+
+// ===== EXAM-LEVEL: multi-step client vignettes. Every wrong choice is a specific common mistake, explained in w[]. =====
+// [topic, question, options (first correct), explanation, [why option 2 is wrong, why 3, why 4]]
+const HARD=[
+// ---- Investments ----
+["iv_re","Marcus is looking at a duplex. Gross rents are $36,000 a year, with 5% expected vacancy. Operating expenses are $9,000, mortgage payments would be $14,000 a year, and depreciation would be $8,000. Similar properties sell at a 7% cap rate. What is the most Marcus should pay?",["$360,000","$385,714","$160,000","$245,714"],"NOI = effective gross income − operating expenses = ($36,000 × 0.95) − $9,000 = $25,200. Value = $25,200 ÷ 0.07 = $360,000. Debt service and depreciation are never subtracted to get NOI.",["Ignores the 5% vacancy: $27,000 ÷ 0.07.","Subtracts mortgage payments. NOI is before financing.","Subtracts depreciation, which is a non-cash tax item, not an operating expense."]],
+["iv_fx","Elena, a U.S. investor, bought 1,000 shares of a German company at €50 when €1 = $1.10. A year later the shares are €54, they paid a €1 dividend, and €1 = $1.05. What was her holding period return in dollars?",["5.0%","10.0%","15.0%","3.1%"],"Start: 1,000 × €50 × $1.10 = $55,000. End: 1,000 × (€54 + €1) × $1.05 = $57,750. $57,750 ÷ $55,000 − 1 = 5.0%. Equivalently (1.10 × 0.9545) − 1.",["That is the euro return; it ignores the 4.5% fall in the euro.","Adds the currency move instead of subtracting it; the euro weakened.","Leaves out the dividend."]],
+["iv_yield","Dana is in the 35% federal and 5% state bracket. She is comparing an in-state municipal bond yielding 3.9% with a corporate bond yielding 6.2%. Which should she choose?",["The muni: its taxable-equivalent yield is 6.50%","The corporate: the muni's TEY is only 6.00%","The corporate: its yield is 2.3 points higher","Either: they produce the same after-tax income"],"An in-state muni is exempt from both federal and state tax, so use the combined 40% rate: 3.9% ÷ 0.60 = 6.50% > 6.2%. Or: corporate after-tax = 6.2% × 0.60 = 3.72% < 3.9%.",["Uses only the 35% federal rate and ignores the state exemption.","Compares pre-tax yields, which is never valid for munis.","They aren't equal: 3.72% vs 3.90% after tax."]],
+["iv_yield","A 10-year, 8% semiannual-coupon bond trades at $1,120. It is callable in 3 years at $1,040. Which yield should the planner give the client as the most realistic return?",["4.90% yield to call","6.36% yield to maturity","7.14% current yield","8.00% coupon rate"],"A premium bond is likely to be called, so quote the lower of YTM and YTC. YTC: N = 6, PMT = 40, PV = −1,120, FV = 1,040 → 2.45% × 2 = 4.90%.",["YTM assumes the bond won't be called, which is unlikely for a premium bond.","Current yield ($80 ÷ $1,120) ignores the loss of the premium.","The coupon rate ignores the price paid."]],
+["iv_ret","Raj buys 100 shares at $40. After year 1 the stock is $46, pays a $2 dividend, and he buys 50 more shares. After year 2 it pays another $2 dividend and he sells all 150 shares at $50. What is his dollar-weighted return?",["15.84%","16.47%","20.00%","13.04%"],"CF0 = −4,000. CF1 = +200 dividends − 2,300 purchase = −2,100. CF2 = 150 × ($50 + $2) = +7,800. IRR = 15.84%.",["That is the time-weighted return: √(1.20 × 1.1304) − 1.","That is only the year-1 return: (46 + 2) ÷ 40 − 1.","That is only the year-2 return: (50 + 2) ÷ 46 − 1."]],
+["iv_margin","Priya buys 500 shares at $80 with 60% initial margin. Maintenance margin is 35%. The stock falls to $45. How much cash must she deposit to meet the margin call?",["$1,375","$7,000","$0","$7,500"],"Loan = $32/share. At $45, equity = $13 (28.9% < 35%). Required equity = 0.35 × $45 = $15.75. Deposit = ($15.75 − $13) × 500 = $1,375.",["Restores the 60% initial margin; a call only requires getting back to maintenance.","There is a call: the call price is $32 ÷ 0.65 = $49.23, and $45 is below it.","Applies 35% to the $80 purchase price instead of the current $45."]],
+["iv_hybrid","A $1,000 par convertible bond converts into 20 shares. The stock is at $42, and the bond trades at $1,010. A comparable nonconvertible bond would be worth $880. What is the conversion premium?",["20.2%","14.8%","16.8%","1.0%"],"Conversion value = 20 × $42 = $840. Premium = ($1,010 − $840) ÷ $840 = 20.2%. The $880 straight-bond value is the floor.",["That is the premium over investment (straight bond) value: (1,010 − 880) ÷ 880.","Divides by the bond price instead of the conversion value.","Compares the price with par, which is irrelevant here."]],
+["iv_val","A stock just paid $1.50. Dividends will grow 15% a year for 3 years, then 5% forever. Beta is 1.2, the risk-free rate is 4%, and the market return is 9%. What is the stock's intrinsic value?",["$40.92","$47.91","$31.50","$39.20"],"r = 4% + 1.2 × 5% = 10%. D1–D3 = 1.725, 1.984, 2.281. P3 = 2.281 × 1.05 ÷ 0.05 = $47.91. Value = PV of D1–D3 + PV of P3 at 10% = $40.92.",["That is the year-3 price, not discounted to today.","Applies 5% growth from today and ignores the high-growth period.","Uses D3 instead of D4 (= D3 × 1.05) in the terminal value."]],
+["iv_rap","Lee will put his entire portfolio into one fund. Risk-free rate 3%. Fund A: return 12%, σ 15%, β 1.2. Fund B: return 14%, σ 20%, β 1.3. Fund C: return 9%, σ 12%, β 0.5. Which should he choose?",["Fund A: highest Sharpe ratio, 0.60","Fund C: highest Treynor ratio, 12.0","Fund B: highest return, 14%","Fund C: lowest standard deviation"],"For an undiversified (single-fund) portfolio, total risk matters, so use Sharpe. A: 9 ÷ 15 = 0.60; B: 11 ÷ 20 = 0.55; C: 6 ÷ 12 = 0.50.",["Treynor uses beta, which only fits a well-diversified portfolio.","Highest return ignores risk.","Lowest risk ignores return."]],
+["iv_bond","A bond has modified duration of 8 and convexity of 90. Yields rise 1 percentage point. Estimate the price change.",["−7.55%","−8.00%","−8.45%","−7.10%"],"Duration effect = −8 × 0.01 = −8.00%. Convexity effect = ½ × 90 × (0.01)² = +0.45%. Total ≈ −7.55%. Convexity always helps an option-free bond.",["Ignores convexity.","Subtracts the convexity adjustment; it's always added.","Uses full convexity (0.90%) instead of half."]],
+["iv_funds","A mutual fund has $120 million in assets, $2 million in liabilities, and 5 million shares. It charges a 5% front-end load. What is the public offering price?",["$24.84","$24.78","$23.60","$22.42"],"NAV = $118M ÷ 5M = $23.60. Offering price = NAV ÷ (1 − load) = $23.60 ÷ 0.95 = $24.84.",["Multiplies NAV by 1.05. The load is a percentage of the offering price, not of NAV.","That is the NAV, without the load.","Subtracts the load from NAV."]],
+["iv_risk","Walter, 72, keeps his savings in a ladder of 1-year CDs and lives on the interest. Rates have fallen sharply this year. Which risk has hurt him most?",["Reinvestment rate risk","Interest rate (price) risk","Default risk","Liquidity risk"],"Maturing CDs must be reinvested at lower rates, so his income falls. Short maturities mean little price risk.",["Price risk hurts holders of long bonds when rates rise; his CDs are short and rates fell.","FDIC-insured CDs have negligible default risk.","1-year CDs mature often; liquidity isn't the issue."]],
+["iv_anal","A firm's net profit margin stays at 6% and its asset turnover stays at 1.5, but it raises its debt so the equity multiplier goes from 1.5 to 2.5. What happens to ROE?",["It rises from 13.5% to 22.5%","It stays at 9.0%","It falls because of the extra interest","It rises from 9.0% to 15.0%"],"ROE = margin × turnover × equity multiplier. Before: 6% × 1.5 × 1.5 = 13.5%. After: 6% × 1.5 × 2.5 = 22.5%. More leverage raises ROE and financial risk.",["9% is ROA (margin × turnover); it ignores leverage.","The question holds margin constant, so no extra interest drag is assumed.","Multiplies ROA by the change in the multiplier (1.0) instead of the new multiplier."]],
+
+// ---- Tax ----
+["tx_gains","Ken has STCG $4,000, STCL $9,000, LTCG $15,000 (including $5,000 from collectibles), and LTCL $3,000. How much of his net gain is taxed at the 28% collectibles rate?",["$0","$2,000","$5,000","$7,000"],"Long-term losses first offset 28% gain: $5,000 − $3,000 = $2,000. Then the $5,000 net short-term loss offsets the remaining 28% gain first ($2,000 → 0), then $3,000 of the 15%/20% gain. Result: $7,000 taxed at 0/15/20%, $0 at 28%.",["Stops after the long-term netting and forgets the net short-term loss.","Ignores netting entirely.","That is his total net gain, but it's taxed at 0/15/20%, not 28%."]],
+["tx_gains","Mia gave her son stock worth $119,000 with a $40,000 basis. The taxable gift (after the annual exclusion) was $100,000, and she paid $25,000 of gift tax. What is the son's basis?",["$59,750","$65,000","$40,000","$119,000"],"Add only the gift tax on the appreciation: $25,000 × ($79,000 ÷ $100,000) = $19,750. Basis = $40,000 + $19,750 = $59,750.",["Adds all the gift tax, not just the portion on the appreciation.","Ignores the gift tax adjustment.","Uses FMV; only inherited property gets FMV basis."]],
+["tx_biz","Jo bought a rental for $300,000 ($250,000 building, $50,000 land) and took $90,000 of straight-line depreciation. She sells it for $400,000. How is the $190,000 gain taxed?",["$90,000 at up to 25%; $100,000 as LTCG","$90,000 as ordinary income; $100,000 as LTCG","$190,000 all as LTCG","$100,000 at up to 25%; $90,000 as LTCG"],"Adjusted basis $210,000; gain $190,000. Straight-line depreciation on real property is unrecaptured §1250 gain, taxed at a maximum of 25%. The rest is §1231/LTCG.",["Ordinary §1245 recapture applies to personal property like equipment, not buildings.","Ignores depreciation recapture.","Reverses the two pieces."]],
+["tx_biz","A business sells equipment for $60,000. It cost $50,000, and $30,000 of depreciation was taken. How is the gain characterized?",["$30,000 ordinary (§1245); $10,000 §1231","$40,000 ordinary income","$40,000 §1231 gain","$30,000 at 25%; $10,000 §1231"],"Adjusted basis $20,000; gain $40,000. Recapture up to depreciation taken is ordinary; the excess over original cost is §1231.",["Recapture is capped at depreciation taken.","Ignores the §1245 recapture.","The 25% rate applies to real property (unrecaptured §1250)."]],
+["tx_prop","Sam exchanges a building (FMV $600,000, basis $250,000, mortgage $150,000) for a building worth $500,000 with a $50,000 mortgage, which he assumes. What gain does he recognize?",["$100,000","$350,000","$150,000","$0"],"Net mortgage relief ($150,000 − $50,000 = $100,000) is boot. Recognized gain = lesser of the $350,000 realized gain or $100,000 boot. New basis: $500,000 − $250,000 deferred = $250,000.",["That is the realized gain, not the recognized gain.","Uses gross mortgage relief; liabilities assumed offset liabilities relieved.","Mortgage relief counts as boot."]],
+["tx_prop","Ava (single) bought a home, lived there 12 months, then moved for a new job 200 miles away and sold at a $160,000 gain. How much is taxable?",["$35,000","$0","$160,000","$110,000"],"A job move qualifies for a reduced exclusion: 12 ÷ 24 × $250,000 = $125,000. Taxable: $160,000 − $125,000 = $35,000.",["The full $250,000 needs 2 years; she gets a prorated amount.","A job move qualifies for the reduced exclusion.","Prorates over 5 years (12 ÷ 60) instead of 24 months."]],
+["tx_acct","A machine that cost $70,000 (with $50,000 of depreciation taken) sells for $100,000. The buyer pays $20,000 now and the rest over 4 years. What gain is reported in the year of sale?",["$56,000","$16,000","$50,000","$80,000"],"All $50,000 of §1245 recapture is taxed in the year of sale. Remaining gain = $30,000. Basis is increased by the recapture to $70,000, so the gross profit ratio is $30,000 ÷ $100,000 = 30%. Year 1: $50,000 + 30% × $20,000 = $56,000.",["Applies the installment method to all $80,000 of gain; recapture can't be deferred.","Recognizes the recapture but forgets the installment gain on the down payment.","Recognizes the whole gain at once."]],
+["tx_law","Rita files her return 3 months late and still owes $10,000. She had no reasonable cause. Combined failure-to-file and failure-to-pay penalties?",["$1,500","$1,650","$150","$2,500"],"When both apply in the same month, failure-to-file (5%) is reduced by failure-to-pay (0.5%), so the combined rate is 5% a month. 3 months × 5% × $10,000 = $1,500.",["Adds 5% + 0.5% without the reduction.","Counts failure-to-pay only.","Jumps to the 25% cap, which takes 5 months."]],
+["tx_law","Which situation extends the IRS assessment period from 3 to 6 years?",["$40,000 of income left off a return reporting $120,000","Deductions overstated by $50,000 on a $120,000 return","Filing the return 2 months late","A math error on a return"],"The 6-year rule needs an omission of more than 25% of gross income reported. $40,000 ÷ $120,000 = 33%.",["Overstated deductions aren't an omission of gross income.","Filing late doesn't extend the period; it starts when the return is filed.","Math errors are corrected under the normal rules."]],
+["tx_ent","Omar's S corp stock basis is $20,000, and he has lent the company $10,000. His share of this year's S corp loss is $35,000. How much can he deduct?",["$30,000, with $5,000 suspended","$20,000, with $15,000 suspended","$35,000","$10,000"],"Losses reduce stock basis first, then debt basis: $20,000 + $10,000 = $30,000 deductible. The $5,000 excess carries forward until basis is restored.",["Debt basis from his direct loan to the S corp also counts.","Basis limits the deduction.","Uses only debt basis."]],
+["tx_ent","Three investors are forming a company. One will put in most of the capital and wants a larger share of the early losses than his ownership percentage. Which entity allows that?",["LLC taxed as a partnership","S corporation","C corporation","Sole proprietorship"],"Partnerships allow special allocations with substantial economic effect.",["S corps must allocate pro rata by shares (one class of stock).","C corp losses stay inside the corporation.","A sole proprietorship has only one owner."]],
+["tx_amt","Lena exercises 1,000 ISOs (strike $10, FMV $30) in March and sells the shares in November of the same year at $35. How is this reported?",["$20,000 ordinary income and $5,000 STCG","$25,000 LTCG","$20,000 AMT adjustment and $5,000 STCG","$25,000 ordinary income"],"A same-year sale is a disqualifying disposition. The spread at exercise is ordinary income; post-exercise gain is short-term. No AMT adjustment applies when the sale is in the same year.",["The ISO holding periods weren't met.","A same-year disqualifying sale removes the AMT adjustment.","Only the spread at exercise is ordinary; the rest is capital gain."]],
+["tx_ded","Carla bought stock 8 months ago for $30,000. It's now worth $50,000, and she donates it to a public charity. What is her deduction (before AGI limits)?",["$30,000","$50,000","$20,000","$0"],"Short-term (ordinary income) property is deductible at the lower of basis or FMV. Holding it 4 more months would give a $50,000 FMV deduction.",["FMV applies only to long-term capital gain property.","That is the unrealized gain.","Gifts of short-term property are still deductible, at basis."]],
+
+// ---- Estate ----
+["es_own","Hal and Gina (common-law state) owned their home JTWROS: cost $200,000, worth $800,000 when Hal died. Gina sells it 14 months later for $820,000. What is her taxable gain?",["$0","$320,000","$70,000","$20,000"],"Basis = $100,000 (her half of cost) + $400,000 (Hal's stepped-up half) = $500,000. Gain $320,000. A surviving spouse who sells within 2 years of death can still use the $500,000 exclusion.",["Ignores the §121 exclusion.","Uses the $250,000 single exclusion; the survivor gets $500,000 within 2 years.","Gives a full step-up; only half is stepped up in a common-law state."]],
+["es_own","Bob owns a 60% tenancy-in-common interest with his brother. Bob's will leaves everything to his wife. What happens to his interest when he dies?",["It passes through probate to his wife","It passes to his brother automatically","It's split 50/50 by state law","It passes outside probate to his wife"],"A TIC interest is freely transferable and passes under the will through probate. There's no survivorship right.",["Survivorship belongs to JTWROS, not TIC.","Unequal TIC shares are respected.","Only survivorship or beneficiary-designated property avoids probate."]],
+["es_own","A couple bought stock while living in California, then moved to Florida. Under most rules, that stock is now:",["Still community property","Converted to JTWROS","Converted to separate property of the earner","Tenancy by the entirety"],"Community property keeps its character after a move. Many common-law states, including Florida, have adopted the Uniform Disposition of Community Property Rights at Death Act.",["Retitling doesn't happen automatically.","Moving doesn't erase community property character.","TBE must be created deliberately."]],
+["es_post","Rosa is primary beneficiary of her late husband's IRA, and her children are contingent beneficiaries. Which action would make her disclaimer NOT qualified?",["Telling the custodian to send the IRA to her favorite charity","Disclaiming 7 months after his death","Disclaiming only part of the account","Letting the IRA pass to her children"],"A qualified disclaimer must pass the property without any direction from the person disclaiming. It goes to whoever is next in line.",["Within 9 months is timely.","A partial disclaimer is allowed.","Passing to the contingent beneficiaries is exactly how it should work."]],
+["es_post","An estate is well under the federal exclusion, so no estate tax is due. Where should the executor deduct $40,000 of administration expenses?",["On Form 1041, against estate income","On Form 706","Split evenly between the two","Nowhere; they aren't deductible"],"With no estate tax, a 706 deduction saves nothing. Deducting on the 1041 reduces income tax.",["It produces no tax benefit when no estate tax is owed.","The same expense can't be deducted twice; choose one return.","Administration expenses are deductible on one return or the other."]],
+["es_post","At Joe's death, his estate holds Stock A worth $2M. Five months later the executor sells Stock A for $1.6M. At 6 months, A's market value is $1.4M. The executor elects alternate valuation. What value is used for Stock A?",["$1.6M","$1.4M","$2.0M","$1.5M"],"Assets sold or distributed within the 6 months are valued on the sale date.",["Six-month values apply only to assets still held.","Date-of-death value isn't used once alternate valuation is elected.","There's no averaging rule."]],
+["es_gst","Grandma puts $3 million into a dynasty trust for her grandchildren and allocates $3 million of GST exemption to it. What is the trust's inclusion ratio?",["0","1","0.5","0.4"],"Inclusion ratio = 1 − (exemption allocated ÷ value transferred) = 1 − 1 = 0. No GST tax applies to the trust ever, even as it grows.",["1 means no exemption was allocated.","Would mean half was exempted.","Confuses the inclusion ratio with the 40% tax rate."]],
+["es_intra","Lou funds a 2-year zeroed-out GRAT with $1,000,000. The §7520 rate is 5%, and the assets earn 12% a year. About how much passes to his children gift-tax-free at the end?",["$114,000","$140,000","$0","$254,400"],"Annual annuity = $1M ÷ (PV factor at 5%, 2 years) = $537,805. Year 1: $1,120,000 − $537,805 = $582,195. Year 2: $652,058 − $537,805 = $114,254.",["Simple excess of 7% × $1M × 2 ignores the annuity paying down principal.","Zeroed-out means no taxable gift, but growth above 5% still passes.","That is total 2-year growth with no annuity paid back."]],
+["es_intra","Victor, 74, is in poor health but not terminally ill. He wants to sell his business to his son, get paid over time, and keep any unpaid balance out of his estate. Best technique?",["Self-canceling installment note","Regular installment sale","Outright gift","GRAT with a 10-year term"],"A SCIN cancels at death, so the unpaid balance isn't included. The son pays a risk premium.",["The unpaid note balance would be included in Victor's estate.","Gifting uses exemption and doesn't give him payments.","He's likely to die during a 10-year term, pulling assets back in."]],
+["es_tax","At Ed's death: home JTWROS with his wife ($800,000), brokerage in his name ($1.2M), $2M policy owned by an ILIT that bought it 5 years ago, $500,000 policy he owned payable to his wife, IRA ($600,000), revocable trust ($400,000). What is his gross estate?",["$3,100,000","$3,500,000","$5,100,000","$2,600,000"],"$400,000 (half of spousal JTWROS) + $1.2M + $500,000 + $600,000 + $400,000 = $3.1M. The ILIT-owned policy is excluded. The marital deduction comes later; it doesn't reduce the gross estate.",["Includes the full home; only half of spousal JTWROS is included.","Includes the ILIT policy, which Ed never owned.","Leaves out the policy payable to his wife; that's a deduction, not an exclusion."]],
+["es_gift","Assume an annual exclusion of $19,000. Tom gives his daughter $100,000 cash, and he and his wife elect gift splitting. What total taxable gifts do they report?",["$62,000","$81,000","$100,000","$31,000"],"Each spouse is treated as giving $50,000: ($50,000 − $19,000) × 2 = $62,000.",["Applies only one exclusion, as if there were no splitting.","Ignores the exclusions.","That is one spouse's amount, not the total."]],
+["es_gift","A trust holds $200,000. A Crummey beneficiary lets a $19,000 withdrawal right lapse. What is the beneficiary's taxable gift to the trust's other beneficiaries?",["$9,000","$14,000","$0","$19,000"],"A lapse is a gift only above the greater of $5,000 or 5% of corpus ($10,000). $19,000 − $10,000 = $9,000.",["Uses $5,000 instead of the greater 5% ($10,000).","Lapses above the 5-and-5 amount are gifts.","The safe-harbor amount is excluded."]],
+["es_char","Rhea funds a 6% CRUT with $1,000,000. At the start of year 2, the trust is worth $1,100,000. What is the year-2 payout?",["$66,000","$60,000","$63,000","$72,600"],"A CRUT pays a fixed % of the annually revalued assets: 6% × $1.1M.",["That's how a CRAT works: a fixed dollar amount based on the initial value.","Averages the two values.","Grows the payment by 10% again on top of the revaluation."]],
+["es_char","AGI is $200,000. Kai gives long-term appreciated stock (FMV $80,000, basis $20,000) to a public charity and makes no special election. What is this year's deduction?",["$60,000, with $20,000 carried forward","$80,000","$20,000","$40,000"],"Long-term capital gain property to a public charity is deductible at FMV up to 30% of AGI ($60,000). The rest carries forward 5 years.",["Exceeds the 30%-of-AGI limit.","That's the result of the basis election, which wasn't made.","20% is the private foundation limit."]],
+["es_docs","Uncle Ray signed a standard (non-durable) power of attorney naming his niece. He now has advanced dementia and can't manage his money. What is likely needed?",["A court guardianship or conservatorship","Nothing; the POA still works","A new springing POA signed now","His living will"],"A non-durable POA ends when the principal becomes incapacitated. He can't sign a new one now without capacity.",["The POA terminated at incapacity.","Signing a document requires capacity.","A living will covers medical treatment, not finances."]],
+
+// ---- Retirement ----
+["rt_dc","A client's nonqualified deferred comp is funded through a rabbi trust. Which provision would cause the trust to fail and the benefits to be taxed now?",["Assets move beyond creditors' reach if the employer's finances weaken","The trust becomes irrevocable on a change in control","Assets stay available to the employer's creditors in bankruptcy","The trustee may hold employer stock"],"A financial-health (solvency) trigger that protects assets when the employer weakens defeats the rabbi trust. Assets must stay subject to general creditors.",["Change-in-control irrevocability is permitted and common.","This is required, not prohibited.","Employer stock is a permitted holding."]],
+["rt_dc","Under §409A, which is NOT a permitted distribution trigger?",["The employee's request at any time","Separation from service","A fixed date set in advance","An unforeseeable emergency"],"Permitted events: separation, disability, death, a specified date, change in control, and unforeseeable emergency. On-demand access is constructive receipt.",["Separation is permitted.","A fixed schedule is permitted.","An emergency is permitted."]],
+["rt_sep","Dr. Lin has 4 employees. She wants contributions only in good years, no employee salary deferrals, and the simplest possible administration. Best plan?",["SEP","SIMPLE IRA","Safe harbor 401(k)","Defined benefit plan"],"SEPs are discretionary, employer-only, and have almost no administration.",["A SIMPLE requires annual employer contributions and offers deferrals.","Safe harbor contributions are mandatory, and 401(k)s need more administration.","DB funding is mandatory and complex."]],
+["rt_sep","A sole proprietor has $100,000 of Schedule C net profit and a 25% SEP plan rate. What is her maximum SEP contribution?",["$18,587","$23,234","$20,000","$25,000"],"SE tax = $100,000 × 0.9235 × 15.3% = $14,130. Net = $100,000 − $7,065 = $92,935. × 20% (0.25 ÷ 1.25) = $18,587.",["Uses 25% instead of the 20% self-employed rate.","Applies 20% before deducting half of SE tax.","Applies 25% to gross profit."]],
+["rt_ira","Nina, 52, converted $30,000 to her Roth 3 years ago. She had made $20,000 of regular contributions over the years. The account is now $70,000, and she withdraws $45,000. What is the result?",["$2,500 penalty, no income tax","Income tax and 10% penalty on $45,000","No tax or penalty","Income tax on $25,000, no penalty"],"Ordering: $20,000 of contributions (free), then $25,000 from the conversion. Conversion money was taxed when converted, but taking it out within 5 years before 59½ triggers the 10% penalty: $2,500.",["Contributions and converted basis come out before earnings.","The conversion is less than 5 years old and she's under 59½.","Conversion amounts aren't taxed again."]],
+["rt_ira","Maria, 48, inherits her late husband's $400,000 IRA. She needs about $30,000 a year now. Best approach?",["Keep it as an inherited (beneficiary) IRA for now","Roll it into her own IRA immediately","Take a lump sum","Disclaim it to the children"],"Distributions from an inherited IRA are free of the 10% penalty at any age. She can still treat it as her own after 59½.",["Rolling it into her own IRA makes withdrawals before 59½ subject to the 10% penalty.","A lump sum is all taxable at once.","She needs the money."]],
+["rt_qp","A plan covers 8 of 10 HCEs and 25 of 50 NHCEs. Does it pass the ratio percentage test?",["No: the ratio is 62.5%","Yes: half the NHCEs are covered","Yes: 55% of everyone is covered","Yes: the ratio is 160%"],"NHCE rate 50% ÷ HCE rate 80% = 62.5%, below the 70% required.",["The test compares the NHCE rate to the HCE rate.","Total coverage isn't the test.","Inverts the ratio."]],
+["rt_qp","Owner, 60, has unpredictable cash flow, wants the largest share of contributions for herself, and wants staff to be able to defer pay. Best design?",["401(k) with a new comparability profit-sharing feature","Defined benefit plan","SIMPLE IRA","Money purchase plan"],"Profit-sharing is discretionary, cross-testing favors the older owner, and the 401(k) adds deferrals.",["Requires mandatory funding despite uneven cash flow.","SIMPLE gives the owner much lower limits and the same formula for everyone.","Contributions are mandatory, with no deferrals."]],
+["rt_dist","Gail, 60, takes a lump-sum distribution of employer stock: plan basis $50,000, FMV $300,000. Six months later she sells it for $320,000. How is it taxed?",["$50,000 ordinary; $250,000 LTCG; $20,000 STCG","$300,000 ordinary; $20,000 STCG","$50,000 ordinary; $270,000 LTCG","$320,000 LTCG"],"Basis is ordinary income at distribution. NUA is always long-term. Growth after distribution follows her own holding period (6 months = short-term).",["That's what a rollover then distribution would look like; NUA treatment taxes only basis now.","Post-distribution gain is short-term here.","Basis is taxed as ordinary income at distribution."]],
+["rt_dist","Ben, 56, left his job this year. He needs $40,000 now and plans to roll his $600,000 401(k) to an IRA. Best sequence?",["Take $40,000 from the 401(k), then roll over the rest","Roll it all to an IRA, then withdraw $40,000","Take a 72(t) series from the IRA","Borrow $40,000 from the IRA"],"Rule of 55: no 10% penalty on 401(k) withdrawals after separating at 55+. An IRA doesn't have this exception.",["The IRA withdrawal would carry a 10% penalty.","It works, but locks him into payments for 5 years or until 59½.","IRA loans aren't allowed."]],
+["rt_fund","Pat, 45, wants $80,000 a year in today's dollars from age 65 for 25 years (beginning of year). Inflation 3%, return 7%. How much capital does Pat need at 65?",["$2,374,020","$2,285,272","$2,347,506","$997,547"],"First need at 65: $80,000 × 1.03²⁰ = $144,489. Inflation-adjusted rate: 1.07 ÷ 1.03 − 1 = 3.8835%. BEGIN mode, N = 25, PMT = 144,489 → PV = $2,374,020.",["END mode; payments start at retirement.","Uses 7% − 3% = 4% instead of the exact inflation-adjusted rate.","Ignores inflation before and during retirement."]],
+["rt_stock","Ivy receives restricted stock worth $10,000 and files an 83(b) election. At vesting 3 years later it's worth $50,000; she sells 2 years after that at $70,000. Total ordinary income?",["$10,000","$50,000","$70,000","$0"],"With 83(b), the value at grant is ordinary income. All later growth ($60,000) is LTCG at sale.",["That's the result without an 83(b) election (taxed at vesting).","Only the grant value is ordinary.","The grant value is taxable when the election is filed."]],
+
+// ---- Insurance ----
+["in_pol","Two whole life policies have similar death benefits. Which comparison method accounts for the time value of money to show which is cheaper if surrendered after 20 years?",["Interest-adjusted surrender cost index","Traditional net cost method","Comparing annual premiums only","Comparing A.M. Best ratings"],"Lower index = lower cost. The net payment cost index is used if the policy is kept until death.",["Traditional net cost ignores time value and can show negative costs.","Premiums alone ignore cash values and dividends.","Ratings measure financial strength, not price."]],
+["in_ltc","Sandra, 58, has $400,000 of savings and worries a long nursing-home stay would wipe it out. Best recommendation?",["A tax-qualified LTC policy with compound inflation protection","Rely on Medicare for nursing-home care","Gift assets to her kids now to qualify for Medicaid","Buy more disability income insurance"],"LTC insurance protects assets. Compound inflation protection matters for a claim likely 20+ years away.",["Medicare doesn't cover custodial care.","Transfers within the 5-year look-back delay Medicaid eligibility, and she gives up control.","DI replaces earned income, not care costs."]],
+["in_di","Dr. Cho earned $10,000 a month before her disability. She now works part time earning $6,000. Her policy pays $5,000 a month for total disability and has a residual benefit rider. Monthly benefit?",["$2,000","$5,000","$4,000","$3,000"],"Residual benefit = loss of income % × total benefit = 40% × $5,000.",["That's the total disability benefit; she has income.","That's the dollar income loss, not the benefit.","Uses 60% (income kept) × $5,000."]],
+["in_di","An employer pays 60% of a group LTD premium and the employee pays 40% with after-tax dollars. The employee receives $5,000 a month in benefits. How much is taxable?",["$3,000","$5,000","$2,000","$0"],"Benefits are taxable in the same proportion as the employer-paid premium: 60% × $5,000.",["Only the employer-paid portion is taxable.","Reverses the proportions.","The employer paid part with pre-tax dollars."]],
+["in_pc","A home with $400,000 replacement cost is insured for $300,000 under an HO-3 with 80% coinsurance and a $1,000 deductible. A $40,000 roof loss has an actual cash value of $28,000. Payment?",["$36,500","$39,000","$37,500","$27,000"],"Required: 80% × $400,000 = $320,000. Coinsurance formula: $300,000 ÷ $320,000 × $40,000 = $37,500, minus $1,000 = $36,500. The HO-3 pays the greater of that or ACV ($28,000 − $1,000).",["Ignores the coinsurance shortfall.","Forgets the deductible.","Uses ACV, which is the smaller amount."]],
+["in_pc","Ted causes an accident. His auto limits are 100/300/50, and he has no umbrella. Injuries: $150,000, $120,000, and $60,000. Property damage is $70,000. How much is Ted personally liable for?",["$90,000","$30,000","$70,000","$20,000"],"Bodily injury: $100,000 + $100,000 + $60,000 = $260,000 (within $300,000). Shortfalls: $50,000 + $20,000. Property damage: $70,000 − $50,000 = $20,000 short. Total $90,000.",["Compares total BI ($330,000) with $300,000 and ignores the per-person cap.","Misses the property damage shortfall.","Counts only the bodily injury shortfalls."]],
+["in_biz","Three equal owners of a $3M business have a cross-purchase agreement, each owning $500,000 policies on the other two. Owner A dies. What is the effect on B's basis?",["Increases by $500,000","No change","Increases by $1,000,000","Increases by $333,333"],"B uses the $500,000 death benefit to buy half of A's $1M interest, so B's basis rises by the price paid.",["That's an entity redemption, which gives no basis increase.","B buys only half of A's share.","Double-counts the ownership split."]],
+["in_biz","An investor buys a $500,000 policy from the insured for $50,000 and pays $30,000 more in premiums before the insured dies. How much of the death benefit is taxable income?",["$420,000","$0","$450,000","$500,000"],"Transfer-for-value: proceeds are taxable above the purchase price plus premiums paid. $500,000 − $80,000 = $420,000.",["The sale to an unrelated investor breaks the exclusion.","Forgets to add premiums paid to basis.","The investor recovers their cost first."]],
+["in_life","Alex, 50, has a MEC with $100,000 of cash value; he has paid $60,000 in premiums. He takes a $50,000 policy loan. Result?",["$40,000 taxable plus a $4,000 penalty","Tax-free, since loans aren't income","$50,000 taxable, no penalty","$10,000 taxable plus a $1,000 penalty"],"MEC loans are taxed earnings-first (LIFO): $40,000 of gain is taxed first. The 10% penalty applies under 59½.",["That's how a non-MEC loan works.","Only the gain is taxable, and he's under 59½.","Applies basis first (FIFO), which is the non-MEC rule."]],
+["in_law","At death, the insurer discovers the insured understated his age by 3 years on the application. What does the insurer do?",["Pays the amount the premiums would have bought at the correct age","Denies the claim for misrepresentation","Pays the full face amount","Refunds premiums only"],"The misstatement of age clause adjusts the benefit and applies even after the contestable period.",["Age misstatement is handled by adjustment, not denial.","The benefit is reduced to match the correct age.","That applies to suicide or rescission situations."]],
+
+// ---- Fundamentals ----
+["fp_tvm","Tia can finance a car at 7.20% compounded monthly or 7.25% compounded semiannually. Which is cheaper?",["7.25% semiannual (EAR 7.38%)","7.20% monthly (EAR 7.20%)","7.20% monthly (EAR 7.44%)","They cost the same"],"Monthly: (1 + 0.072 ÷ 12)¹² − 1 = 7.44%. Semiannual: (1 + 0.0725 ÷ 2)² − 1 = 7.38%. For a borrower, the lower EAR wins.",["Uses the nominal rate as the EAR.","Correct EAR, but that's the more expensive loan.","The EARs differ."]],
+["fp_tvm","College costs $30,000 a year today, inflating 5%. A child starts in 10 years for 4 years (paid at the start of each year). The investment return is 7%. What lump sum is needed today?",["$96,614","$116,677","$59,313","$120,000"],"Inflation-adjusted rate = 1.07 ÷ 1.05 − 1 = 1.9048%. PV at year 10 (BEGIN, N = 4, PMT = 30,000) = $116,677. Discount 10 years at 1.9048% → $96,614.",["Stops at the year-10 value.","Discounts at 7% after using real dollars, which mixes real and nominal rates.","Ignores inflation and returns."]],
+["fp_irr","An investment costs $50,000 and returns $10,000, $15,000, $20,000, and $25,000 at the end of years 1–4. The required return is 10%. What are the IRR and the decision?",["12.83%; accept","12.83%; reject","40.00%; accept","10.00%; indifferent"],"CF0 = −50,000; CF1–4 as given → IRR = 12.83% > 10%, so NPV = +$3,589. Accept.",["The IRR exceeds the required return, so accept.","That is the total undiscounted gain ÷ cost.","The IRR isn't 10%; NPV is positive."]]
+];
+
+const BANK=[...RAW.map(r=>({t:r[0],q:r[1],o:r[2],e:r[3],c:r[4]||null,x:false})),...HARD.map(r=>({t:r[0],q:r[1],o:r[2],e:r[3],w:r[4],c:null,x:true}))].map((q,n)=>({...q,id:n,a:TOPICS[q.t][1]}));
+const COUNT={};BANK.forEach(q=>COUNT[q.t]=(COUNT[q.t]||0)+1);
+const HC={};BANK.forEach(q=>{if(q.x)HC[q.t]=(HC[q.t]||0)+1});
+const TW={};for(const k in TOPICS){const[,a,s]=TOPICS[k];TW[k]=AREAS[a][1]*Math.max(3,TARGET-s)}
 
 const $=s=>document.querySelector(s);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let selected=new Set(store.get("cfpDomains",Object.keys(DOMAINS)));
-let set=[],i=0,results=[],locked=false;
+const MODES={exam:["Exam-level","Hard vignettes, weak topics first"],focus:["Weak-area focus","Mixed difficulty, weighted by topic"],cases:["Case studies","Scenario item sets"],missed:["My missed questions","Ones he got wrong here"],all:["Everything","Random across all topics"]};
+let mode=store.get("cfpMode4","exam");
+let set=[],i=0,results=[],locked=false,label="";
 
 function shuffle(a){a=a.slice();for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}return a}
+function lvl(s){return s<60?"bad":s<70?"warn":"good"}
 
 function countdown(){
-  const now=new Date(),start=new Date(2026,9,29),end=new Date(2026,10,5,23,59);
-  const days=Math.ceil((start-now)/864e5);
-  $("#countdown").textContent= now<start?`${days} day${days===1?"":"s"} to the Oct 29 window`:now<=end?"Exam window open · closes Nov 5":"Next window: March 2027";
+  const now=new Date(),exam=new Date(2026,9,30);
+  const days=Math.ceil((exam-now)/864e5);
+  $("#countdown").textContent=days>1?`${days} days to exam day · Fri Oct 30`:days===1?"Exam is tomorrow · Fri Oct 30":days===0?"Exam day":"Window closes Nov 5";
 }
 
-function renderChips(){
-  const c=$("#chips");c.innerHTML="";
-  for(const [k,[name,w]] of Object.entries(DOMAINS)){
-    const b=document.createElement("button");b.className="chip";b.id="chip-"+k;
-    b.setAttribute("aria-pressed",selected.has(k));
-    b.innerHTML=`<b>${k}</b>${name} · ${w}%`;
-    b.onclick=()=>{selected.has(k)?selected.delete(k):selected.add(k);if(!selected.size)selected.add(k);store.set("cfpDomains",[...selected]);renderChips()};
-    c.appendChild(b);
-  }
+function topicBtn(k){
+  const[name,a,s]=TOPICS[k];
+  return `<button class="topic" id="tp-${k}" data-t="${k}"><span class="pill ${lvl(s)}">${s}%</span><span>${name}<br><span class="area">${AREAS[a][0].toUpperCase()}</span></span><small>${COUNT[k]||0} Qs${HC[k]?`<br>${HC[k]} hard`:""}</small></button>`;
+}
+function renderPlan(){
+  $("#areas").innerHTML=Object.values(AREAS).map(([n,,s])=>`<span>${n} <span class="pill ${lvl(s)}">${s}%</span></span>`).join("");
+  const keys=Object.keys(TOPICS).filter(k=>COUNT[k]).sort((x,y)=>TOPICS[x][2]-TOPICS[y][2]);
+  $("#weak").innerHTML=keys.filter(k=>TOPICS[k][2]<60).map(topicBtn).join("");
+  $("#strong").innerHTML=keys.filter(k=>TOPICS[k][2]>=60).map(topicBtn).join("");
+  document.querySelectorAll(".topic").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.t;label=TOPICS[k][0];
+    const tq=shuffle(BANK.filter(q=>q.t===k));start([...tq.filter(q=>q.x),...tq.filter(q=>!q.x)]);
+    $("#stage").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+  });
 }
 
-// Weighted draw: proportional to exam weight within selected domains.
-function buildSet(pool,n){
-  if(n>=pool.length)return shuffle(pool);
-  const by={};pool.forEach(q=>(by[q.d]=by[q.d]||[]).push(q));
-  for(const k in by)by[k]=shuffle(by[k]);
-  const keys=Object.keys(by),tw=keys.reduce((s,k)=>s+DOMAINS[k][1],0);
-  const out=[];let quota=keys.map(k=>({k,want:n*DOMAINS[k][1]/tw}));
-  quota.forEach(o=>{const t=Math.min(Math.floor(o.want),by[o.k].length);out.push(...by[o.k].splice(0,t))});
-  quota.sort((a,b)=>(b.want%1)-(a.want%1));
-  while(out.length<n){let added=false;for(const o of quota){if(out.length>=n)break;if(by[o.k].length){out.push(by[o.k].shift());added=true}}if(!added)break}
-  return shuffle(out);
+function renderModes(){
+  $("#modes").innerHTML=Object.entries(MODES).map(([k,[t,s]])=>`<button class="mode" id="mode-${k}" aria-pressed="${mode===k}" data-m="${k}">${t}<small>${s}</small></button>`).join("");
+  document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set("cfpMode4",mode);renderModes()});
+}
+
+// Weighted sampling without replacement. Each topic's weight is split across its questions; missed questions count triple.
+function weightedDraw(pool,n,boost=1){
+  const pc={};pool.forEach(q=>pc[q.t]=(pc[q.t]||0)+(q.x?boost:1));
+  const miss=new Set(store.get("cfpMissed3",[]));
+  return pool.map(q=>{const w=TW[q.t]/pc[q.t]*(q.x?boost:1)*(miss.has(q.id)?3:1);return{q,k:Math.pow(Math.random(),1/w)}})
+    .sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
+}
+
+function draw(){
+  const n=+$("#count").value;label=MODES[mode][0];
+  if(mode==="cases")return shuffle(Object.keys(CASES)).flatMap(c=>BANK.filter(q=>q.c===c));
+  if(mode==="missed"){const m=new Set(store.get("cfpMissed3",[]));return shuffle(BANK.filter(q=>m.has(q.id))).slice(0,n)}
+  if(mode==="all")return shuffle(BANK).slice(0,n);
+  if(mode==="exam")return shuffle(weightedDraw(BANK.filter(q=>q.x),n));
+  return shuffle(weightedDraw(BANK,n,4));
 }
 
 function start(qs){
-  set=(qs||buildSet(BANK.filter(q=>selected.has(q.d)),+$("#count").value)).map(q=>{const o=shuffle(q.o.map((t,j)=>({t,c:j===0})));return{...q,opts:o}});
+  const base=qs||draw();
+  if(!base.length){$("#stage").innerHTML=`<article class="card"><p class="q">No missed questions saved yet.</p><p class="note">Questions he gets wrong in any mode are saved here to retry. Start with Weak-area focus.</p></article>`;set=[];return}
+  set=base.map(q=>({...q,opts:shuffle(q.o.map((t,j)=>({t,i:j,c:j===0})))}));
   i=0;results=[];renderQ();
 }
 
 function renderQ(){
   locked=false;const q=set[i],correct=results.filter(r=>r.ok).length;
+  const cs=q.c?CASES[q.c]:null,firstOfCase=cs&&(i===0||set[i-1].c!==q.c);
   $("#stage").innerHTML=`<article class="card" aria-live="polite">
-    <div class="meta"><span class="dtag">${q.d} · ${DOMAINS[q.d][0]}</span><span>Q ${i+1} / ${set.length}</span></div>
+    <div class="meta"><span class="dtag">${AREAS[q.a][0]} · ${TOPICS[q.t][0]}${cs?" · Case":""}${q.x?" · Exam-level":""}</span><span>${label} · Q ${i+1} / ${set.length}</span></div>
     <div class="bar"><i style="width:${i/set.length*100}%"></i></div>
+    ${cs?`<details class="case" ${firstOfCase?"open":""}><summary>Case: ${cs.t}</summary>${cs.body}</details>`:""}
     <p class="q">${q.q}</p>
-    <div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="opt${j}" data-j="${j}"><span class="k">${"abcd"[j]})</span><span>${o.t}</span></button>`).join("")}</div>
+    <div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="opt${j}" data-j="${j}"><span class="k">${"ABCD"[j]}.</span><span>${o.t}</span></button>`).join("")}</div>
     <div id="fb"></div>
     <div class="foot"><span class="score">${correct} correct of ${results.length}</span><button class="btn" id="next" hidden>${i+1<set.length?"Next question":"See results"}</button></div>
   </article>`;
@@ -239,9 +757,10 @@ function answer(j){
   if(locked)return;locked=true;
   const q=set[i],ok=q.opts[j].c;
   results.push({q,ok,pick:q.opts[j].t});
-  const stats=store.get("cfpStats",{});const s=stats[q.d]||[0,0];s[0]+=ok?1:0;s[1]++;stats[q.d]=s;store.set("cfpStats",stats);
+  const stats=store.get("cfpStats3",{});const s=stats[q.t]||[0,0];s[0]+=ok?1:0;s[1]++;stats[q.t]=s;store.set("cfpStats3",stats);
+  const miss=new Set(store.get("cfpMissed3",[]));ok?miss.delete(q.id):miss.add(q.id);store.set("cfpMissed3",[...miss]);
   document.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(q.opts[k].c)b.classList.add("right");else if(k===j)b.classList.add("wrong");else b.classList.add("dim")});
-  $("#fb").innerHTML=`<div class="explain ${ok?"ok":"no"}"><strong>${ok?"Correct.":"Not quite. Answer: "+q.o[0]}</strong>${q.e}</div>`;
+  $("#fb").innerHTML=`<div class="explain ${ok?"ok":"no"}"><strong>${ok?"Correct.":"Not quite. Answer: "+q.o[0]}</strong>${q.e}${q.w?`<ul class="why">${q.opts.map((o,k)=>o.c?"":`<li><b>${"ABCD"[k]}.</b> ${q.w[o.i-1]}</li>`).join("")}</ul>`:""}</div>`;
   $(".score").textContent=`${results.filter(r=>r.ok).length} correct of ${results.length}`;
   const n=$("#next");n.hidden=false;n.focus();
 }
@@ -250,22 +769,22 @@ function next(){i+1<set.length?(i++,renderQ()):renderResults()}
 
 function renderResults(){
   const c=results.filter(r=>r.ok).length,pct=Math.round(c/results.length*100);
-  const by={};results.forEach(r=>{const b=by[r.q.d]=by[r.q.d]||[0,0];b[0]+=r.ok?1:0;b[1]++});
-  const life=store.get("cfpStats",{});
-  const rows=Object.keys(DOMAINS).filter(k=>by[k]||life[k]).map(k=>{const b=by[k],l=life[k];
+  const by={};results.forEach(r=>{const b=by[r.q.t]=by[r.q.t]||[0,0];b[0]+=r.ok?1:0;b[1]++});
+  const life=store.get("cfpStats3",{});
+  const rows=Object.keys(by).sort((x,y)=>by[x][0]/by[x][1]-by[y][0]/by[y][1]).map(k=>{const b=by[k],l=life[k],ds=TOPICS[k][2];
     const lp=l?Math.round(l[0]/l[1]*100):null;
-    return `<tr><td><b>${k}</b> ${DOMAINS[k][0]}</td><td class="n">${b?b[0]+"/"+b[1]:"–"}</td><td><div class="mini"><i style="width:${lp??0}%"></i></div></td><td class="n">${lp!==null?lp+"% ("+l[1]+")":"–"}</td></tr>`}).join("");
-  const missed=results.filter(r=>!r.ok);
+    return `<tr><td>${TOPICS[k][0]}</td><td class="n">${b[0]}/${b[1]}</td><td class="n">${lp!==null?`<span class="pill ${lvl(lp)}">${lp}%</span> <span class="note">(${l[1]})</span>`:"–"}</td><td class="n"><span class="pill ${lvl(ds)}">${ds}%</span></td></tr>`}).join("");
+  const missed=results.filter(r=>!r.ok),saved=store.get("cfpMissed3",[]).length;
   $("#stage").innerHTML=`<article class="card">
-    <span class="label">Set complete</span>
-    <div class="row" style="gap:16px;align-items:baseline"><p class="big">${pct}%</p><span class="score">${c} of ${results.length} correct</span></div>
-    <div style="overflow-x:auto"><table><thead><tr><th>Domain</th><th style="text-align:right">This set</th><th>All-time</th><th style="text-align:right">Accuracy (answered)</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="row">${missed.length?`<button class="btn" id="retry">Retry ${missed.length} missed</button>`:""}<button class="btn ghost" id="again">New set</button><button class="btn ghost" id="reset">Clear all-time stats</button></div>
-    ${missed.length?`<span class="label">Review missed</span><div class="missed">${missed.map(r=>`<div><p><b>${r.q.d}.</b> ${r.q.q}</p><p>You chose: ${r.pick}</p><p><b>Answer: ${r.q.o[0]}</b></p><p class="note">${r.q.e}</p></div>`).join("")}</div>`:""}
+    <span class="label">Set complete · ${label}</span>
+    <div class="row" style="gap:16px;align-items:baseline"><p class="big">${pct}%</p><span class="score">${c} of ${results.length} correct · ${saved} saved to retry</span></div>
+    <div class="tbl"><table><thead><tr><th>Topic</th><th class="n">This set</th><th class="n">Here, all-time</th><th class="n">Dalton</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="row">${missed.length?`<button class="btn" id="retry">Retry ${missed.length} missed</button>`:""}<button class="btn ghost" id="again">New set</button><button class="btn ghost" id="reset">Clear stats</button></div>
+    ${missed.length?`<span class="label">Review missed</span><div class="missed">${missed.map(r=>`<div><p><b>${TOPICS[r.q.t][0]}.</b> ${r.q.q}</p><p>You chose: ${r.pick}</p><p><b>Answer: ${r.q.o[0]}</b></p><p class="note">${r.q.e}</p></div>`).join("")}</div>`:""}
   </article>`;
-  if(missed.length)$("#retry").onclick=()=>start(missed.map(r=>r.q));
+  if(missed.length)$("#retry").onclick=()=>{label="Retry missed";start(missed.map(r=>r.q))};
   $("#again").onclick=()=>start();
-  $("#reset").onclick=e=>{if(e.target.dataset.arm){store.set("cfpStats",{});renderResults()}else{e.target.dataset.arm=1;e.target.textContent="Click again to clear"}};
+  $("#reset").onclick=e=>{if(e.target.dataset.arm){store.set("cfpStats3",{});store.set("cfpMissed3",[]);renderResults()}else{e.target.dataset.arm=1;e.target.textContent="Click again to clear"}};
 }
 
 document.addEventListener("keydown",e=>{
@@ -274,7 +793,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="Enter"&&locked&&$("#next")&&!$("#next").hidden&&document.activeElement.id!=="next"){next()}
 });
 $("#newSet").onclick=()=>start();
-countdown();renderChips();start();
+countdown();renderPlan();renderModes();start();
 </script>
 </body>
 
